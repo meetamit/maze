@@ -10,13 +10,19 @@ requirejs [
   fairy
     .enter world
     .transportTo world.maze.start
-    .on "change", (to, from) ->
-      renderer.update()
 
   # Initialize the renderer
   renderer = new Renderer
     world: world
     fairy: fairy
+
+  tick = ->
+    fairy.tick()
+    renderer.update()
+    setTimeout tick, 30
+    # window.requestAnimationFrame tick
+
+  tick()
 
   # class Judge
   #   constructor: (@fairy) ->

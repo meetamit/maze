@@ -27,6 +27,13 @@ define ["models/maze"], (Maze) ->
       ]
     indexToPixelPos: (index) ->
       @gridToPixelPos @indexToGridPos index
+    pixelPosToIndex: (pixel) ->
+      @gridPosToIndex [
+        Math.floor pixel[0] / (@cellSize + @cellSpacing)
+        Math.floor pixel[1] / (@cellSize + @cellSpacing)
+      ]
+    gridPosToIndex: (gridPos) ->
+      gridPos[0] + gridPos[1] * @gridSize[0]
 
     getGridSize: -> @gridSize
 

@@ -9,19 +9,19 @@ define ["models/world", "lib/d3"], (World, d3) ->
       @wallsCtx = @wallsCanvas.node().getContext "2d"
       @_renderWalls()
 
-      @update()
-    update: ->
-      fairyPos = @world.indexToPixelPos @fairy.position
-      fairySel = @sel.selectAll(".fairy")
+      @fairySel = @sel.selectAll(".fairy")
         .data [null]
-      fairySel.enter()
+      @fairySel.enter()
         .append "div"
         .attr
           class: "fairy"
-      fairySel
+
+      @update()
+    update: ->
+      @fairySel
         .style
-          left: fairyPos[0] + "px"
-          top:  fairyPos[1] + "px"
+          left: @fairy.pixel[0] + "px"
+          top:  @fairy.pixel[1] + "px"
     _renderWalls: ->
       @wallsCanvas.attr
         width:  @world.size[0]

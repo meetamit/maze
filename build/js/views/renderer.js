@@ -8,19 +8,17 @@
         this.wallsCanvas = this.sel.append("canvas");
         this.wallsCtx = this.wallsCanvas.node().getContext("2d");
         this._renderWalls();
+        this.fairySel = this.sel.selectAll(".fairy").data([null]);
+        this.fairySel.enter().append("div").attr({
+          "class": "fairy"
+        });
         this.update();
       }
 
       Renderer.prototype.update = function() {
-        var fairyPos, fairySel;
-        fairyPos = this.world.indexToPixelPos(this.fairy.position);
-        fairySel = this.sel.selectAll(".fairy").data([null]);
-        fairySel.enter().append("div").attr({
-          "class": "fairy"
-        });
-        return fairySel.style({
-          left: fairyPos[0] + "px",
-          top: fairyPos[1] + "px"
+        return this.fairySel.style({
+          left: this.fairy.pixel[0] + "px",
+          top: this.fairy.pixel[1] + "px"
         });
       };
 

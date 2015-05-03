@@ -31,6 +31,14 @@
         return this.gridToPixelPos(this.indexToGridPos(index));
       };
 
+      World.prototype.pixelPosToIndex = function(pixel) {
+        return this.gridPosToIndex([Math.floor(pixel[0] / (this.cellSize + this.cellSpacing)), Math.floor(pixel[1] / (this.cellSize + this.cellSpacing))]);
+      };
+
+      World.prototype.gridPosToIndex = function(gridPos) {
+        return gridPos[0] + gridPos[1] * this.gridSize[0];
+      };
+
       World.prototype.getGridSize = function() {
         return this.gridSize;
       };

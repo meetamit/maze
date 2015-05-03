@@ -22,8 +22,8 @@
         } else if (key === 39) {
           direction = World.E;
         }
-        next = _this.fairy.world.possiblyDue(direction).from(_this.fairy.position);
-        if (next !== _this.fairy.position) {
+        next = _this.fairy.world.possiblyDue(direction).from(_this.fairy.index);
+        if (next !== _this.fairy.index) {
           return _this.fairy.moveTo(next);
         }
       };
@@ -32,49 +32,52 @@
       function Fairy() {
         this.brain = new Brain(this);
         this.dispatch = d3.dispatch("change");
+        this.velocity = [0, 0];
         d3.rebind(this, this.dispatch, "on", "off");
       }
+
+      Fairy.prototype.tick = function() {
+        var diff, dist, heading, speed;
+        if (!this.target) {
+          return this;
+        }
+        diff = [this.target.pixel[0] - this.pixel[0], this.target.pixel[1] - this.pixel[1]];
+        dist = Math.sqrt(diff[0] * diff[0] + diff[1] * diff[1]);
+        if (dist < 0.1) {
+          this.velocity[0] = this.velocity[1] = 0;
+          this.pixel[0] = this.target.pixel[0];
+          this.pixel[1] = this.target.pixel[1];
+          this.target = null;
+          return this;
+        }
+        speed = Math.min(5, dist, 1 + Math.sqrt(this.velocity[0] * this.velocity[0] + this.velocity[1] * this.velocity[1]));
+        heading = Math.atan2(diff[1], diff[0]);
+        this.velocity = [speed * Math.cos(heading), speed * Math.sin(heading)];
+        this.pixel[0] += this.velocity[0];
+        this.pixel[1] += this.velocity[1];
+        this.index = this.world.pixelPosToIndex(this.pixel);
+        return this;
+      };
 
       Fairy.prototype.enter = function(world) {
         this.world = world;
         return this;
       };
 
-      Fairy.prototype.transportTo = function(position) {
-        this.position = position;
-        this.pixel = this.world.indexToPixelPos(this.position);
+      Fairy.prototype.transportTo = function(index1) {
+        this.index = index1;
+        this.pixel = this.world.indexToPixelPos(this.index);
         return this;
       };
 
       Fairy.prototype.moveTo = function(index, callback) {
-        var previous;
         if (callback == null) {
           callback = function() {};
         }
-        previous = this.position;
-        this.position = index;
-        this.dispatch.change(this.position, previous);
-        return callback();
-      };
-
-      Fairy.prototype.moveTowards = function(index) {
-        this.target = index;
-        this.plan = this._getMoves();
-        return this._executeNextStep();
-      };
-
-      Fairy.prototype._executeNextStep = function() {
-        var nextMove;
-        nextMove = this.plan.shift();
-        if (nextMove) {
-          this.next = this.world.neighbour(this.position, nextMove);
-          return this.moveTo(nextMove, this._executeNextStep.bind(this));
-        } else if (this.position === this.target) {
-          this.target = null;
-          return this.plan = null;
-        } else {
-          throw new Error("Done moving, but didn't reach target");
-        }
+        return this.target = {
+          index: index,
+          pixel: this.world.indexToPixelPos(index)
+        };
       };
 
       return Fairy;
