@@ -1,0 +1,26 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      * {margin: 0; padding: 0;}
+      canvas {display: block; }
+      canvas.ui { position:absolute; top: 0; }
+      body { xoverflow: hidden; }
+      body { background: black; }
+      svg { display: block; position: relative; }
+      svg path { stroke: white; fill: none; }
+      .game .marker { background: orange; border-radius: 100%; position: absolute; }
+      .game .marker:before { content:''; width:200%; height:200%; display:block; background:transparent; margin: -50%;}
+    </style>
+  </head>
+  <body>
+    <div class="game">
+      <canvas class="maze"></canvas>
+      <canvas class="ui"></canvas>
+      <div class="marker"></div>
+    </div>
+    <svg></svg>
+    <script src="d3.v3.min.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>
