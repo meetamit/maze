@@ -2,9 +2,23 @@ define ["models/world", "lib/d3"], (World, d3) ->
   class Renderer
     constructor: (attrs) ->
       { @world, @fairy } = attrs
-      @sel = d3.select("body")
-        .append "div"
+
+      @dispatch = d3.dispatch("arrowPressed", "cellSelected")
+      d3.rebind @, @dispatch, "on", "off"
+
+      @body = d3.select("body")
+        .on "keydown.player", =>
+          key = d3.event.keyCode
+          direction = if key is 38 then World.N # up
+          else        if key is 40 then World.S # down
+          else        if key is 37 then World.W # left
+          else        if key is 39 then World.E # right
+          @dispatch.arrowPressed direction if direction?
+
+      @sel = @body.append "div"
         .attr "class", "world"
+
+
       @wallsCanvas = @sel.append "canvas"
       @wallsCtx = @wallsCanvas.node().getContext "2d"
       @_renderWalls()

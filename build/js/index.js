@@ -7,7 +7,15 @@
     renderer = new Renderer({
       world: world,
       fairy: fairy
-    });
+    }).on("arrowPressed", (function(_this) {
+      return function(direction) {
+        return fairy.wish().head(direction);
+      };
+    })(this)).on("cellSelected", (function(_this) {
+      return function(index) {
+        return fairy.wish().goto(index);
+      };
+    })(this));
     tick = function() {
       fairy.tick();
       renderer.update();

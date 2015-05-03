@@ -4,7 +4,19 @@
     return Renderer = (function() {
       function Renderer(attrs) {
         this.world = attrs.world, this.fairy = attrs.fairy;
-        this.sel = d3.select("body").append("div").attr("class", "world");
+        this.dispatch = d3.dispatch("arrowPressed", "cellSelected");
+        d3.rebind(this, this.dispatch, "on", "off");
+        this.body = d3.select("body").on("keydown.player", (function(_this) {
+          return function() {
+            var direction, key;
+            key = d3.event.keyCode;
+            direction = key === 38 ? World.N : key === 40 ? World.S : key === 37 ? World.W : key === 39 ? World.E : void 0;
+            if (direction != null) {
+              return _this.dispatch.arrowPressed(direction);
+            }
+          };
+        })(this));
+        this.sel = this.body.append("div").attr("class", "world");
         this.wallsCanvas = this.sel.append("canvas");
         this.wallsCtx = this.wallsCanvas.node().getContext("2d");
         this._renderWalls();

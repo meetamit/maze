@@ -3,22 +3,16 @@ define ["models/world", "lib/d3"], (World, d3) ->
     constructor: (fairy) ->
       @fairy = fairy
 
-  d3.select "body"
-    .on "keydown.player", =>
-      key = d3.event.keyCode
-      if      key is 38 then direction = World.N # up
-      else if key is 40 then direction = World.S # down
-      else if key is 37 then direction = World.W # left
-      else if key is 39 then direction = World.E # right
-
+    head: (direction) ->
       next = @fairy.world.possiblyDue(direction).from @fairy.index
       @fairy.moveTo next if next != @fairy.index
 
+
   class Fairy
     constructor: ->
+      @velocity = [0,0]
       @brain = new Brain @
       @dispatch = d3.dispatch("change")
-      @velocity = [0,0]
       d3.rebind @, @dispatch, "on", "off"
     tick: ->
       return @ if !@target
@@ -46,6 +40,7 @@ define ["models/world", "lib/d3"], (World, d3) ->
       @
 
     enter: (@world) -> @
+    wish: -> @brain
     transportTo: (@index) ->
       @pixel = @world.indexToPixelPos @index
       @

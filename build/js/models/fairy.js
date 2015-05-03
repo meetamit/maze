@@ -6,33 +6,22 @@
         this.fairy = fairy;
       }
 
+      Brain.prototype.head = function(direction) {
+        var next;
+        next = this.fairy.world.possiblyDue(direction).from(this.fairy.index);
+        if (next !== this.fairy.index) {
+          return this.fairy.moveTo(next);
+        }
+      };
+
       return Brain;
 
     })();
-    d3.select("body").on("keydown.player", (function(_this) {
-      return function() {
-        var direction, key, next;
-        key = d3.event.keyCode;
-        if (key === 38) {
-          direction = World.N;
-        } else if (key === 40) {
-          direction = World.S;
-        } else if (key === 37) {
-          direction = World.W;
-        } else if (key === 39) {
-          direction = World.E;
-        }
-        next = _this.fairy.world.possiblyDue(direction).from(_this.fairy.index);
-        if (next !== _this.fairy.index) {
-          return _this.fairy.moveTo(next);
-        }
-      };
-    })(this));
     return Fairy = (function() {
       function Fairy() {
+        this.velocity = [0, 0];
         this.brain = new Brain(this);
         this.dispatch = d3.dispatch("change");
-        this.velocity = [0, 0];
         d3.rebind(this, this.dispatch, "on", "off");
       }
 
@@ -62,6 +51,10 @@
       Fairy.prototype.enter = function(world) {
         this.world = world;
         return this;
+      };
+
+      Fairy.prototype.wish = function() {
+        return this.brain;
       };
 
       Fairy.prototype.transportTo = function(index1) {

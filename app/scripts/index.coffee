@@ -15,6 +15,10 @@ requirejs [
   renderer = new Renderer
     world: world
     fairy: fairy
+  .on "arrowPressed", (direction) =>
+    fairy.wish().head direction
+  .on "cellSelected", (index) =>
+    fairy.wish().goto index
 
   tick = ->
     fairy.tick()
