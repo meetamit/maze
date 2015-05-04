@@ -12,7 +12,9 @@ define ["models/maze"], (Maze) ->
         Math.floor (@size[1] - @cellSpacing) / (@cellSize + @cellSpacing)
       ]
 
-      @maze = new Maze @gridSize
+      @maze = new Maze
+        gridSize: @gridSize
+        seed: 2
       @cells = @maze.generate()
 
     indexToGridPos: (index) ->

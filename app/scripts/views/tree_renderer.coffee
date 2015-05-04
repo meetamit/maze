@@ -47,7 +47,7 @@ define ['lib/d3'], (d3) ->
       @layout = d3.layout.tree()
       @layout.size if @transpose then @inner.concat().reverse() else @inner
 
-      @nodes = @layout.nodes(@world.maze.tree).sort (a, b) -> d3.ascending a.index, b.index
+      @nodes = @layout.nodes(@world.maze.tree)
       links = @layout.links @nodes
 
       g = @svg.selectAll("g.links")
@@ -80,7 +80,7 @@ define ['lib/d3'], (d3) ->
         .attr "class", "marks"
         .attr "transform", "translate(#{@margin.left},#{@margin.top})"
 
-      node = @nodes[@fairy.index]
+      node = @world.maze.nodes[@fairy.index]
       mark = g.selectAll "circle"
         .data [@fairy]
       mark.enter()

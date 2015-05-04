@@ -6,14 +6,26 @@
     W = 1 << 2;
     E = 1 << 3;
     return Maze = (function() {
-      function Maze(gridSize, start) {
-        this.gridSize = gridSize;
-        this.start = start != null ? start : 0;
+      function Maze(attrs) {
+        var start;
+        this.gridSize = attrs.gridSize, this.seed = attrs.seed, start = attrs.start;
+        this.start = start != null ? start : (this.gridSize[1] - 1) * this.gridSize[0];
       }
 
+      Maze.prototype.random = function() {
+        var x;
+        if (this.seed != null) {
+          x = Math.sin(this.seed++) * 10000;
+          return x - Math.floor(x);
+        } else {
+          return Math.random();
+        }
+      };
+
       Maze.prototype.generate = function() {
+        var ref;
         this.cells = this._generateMaze(this.gridSize);
-        this.tree = this._generateTree();
+        ref = this._generateTree(), this.tree = ref.tree, this.nodes = ref.nodes;
         return this.cells;
       };
 
@@ -31,15 +43,17 @@
       };
 
       Maze.prototype._generateTree = function() {
-        var cell, child, childIndex, frontier, height, parent, ref, root, visited, width;
+        var cell, child, childIndex, frontier, height, nodes, parent, ref, root, visited, width;
         ref = this.gridSize, width = ref[0], height = ref[1];
-        visited = d3.range(width * height).map(function() {
+        visited = d3.range(width * height).map(function(n, i) {
           return false;
         });
+        visited[this.start] = true;
         root = {
           index: this.start,
           children: []
         };
+        nodes = [root];
         frontier = [root];
         while ((parent = frontier.pop()) != null) {
           cell = this.cells[parent.index];
@@ -50,6 +64,7 @@
               children: []
             };
             parent.children.push(child);
+            nodes.push(child);
             frontier.push(child);
           }
           if (cell & W && !visited[childIndex = parent.index - 1]) {
@@ -59,6 +74,7 @@
               children: []
             };
             parent.children.push(child);
+            nodes.push(child);
             frontier.push(child);
           }
           if (cell & S && !visited[childIndex = parent.index + width]) {
@@ -68,6 +84,7 @@
               children: []
             };
             parent.children.push(child);
+            nodes.push(child);
             frontier.push(child);
           }
           if (cell & N && !visited[childIndex = parent.index - width]) {
@@ -77,10 +94,16 @@
               children: []
             };
             parent.children.push(child);
+            nodes.push(child);
             frontier.push(child);
           }
         }
-        return root;
+        return {
+          tree: root,
+          nodes: nodes.sort(function(a, b) {
+            return d3.ascending(a.index, b.index);
+          })
+        };
       };
 
       Maze.prototype._generateMaze = function() {
@@ -150,21 +173,22 @@
             return false;
           }
         };
-        shuffle = function(array, i0, i1) {
-          var i, j, m, t;
-          m = i1 - i0;
-          t = i = j = null;
-          while (m) {
-            i = Math.random() * m-- | 0;
-            t = array[m + i0];
-            array[m + i0] = array[i + i0];
-            array[i + i0] = t;
-          }
-          return array;
-        };
+        shuffle = (function(_this) {
+          return function(array, i0, i1) {
+            var i, j, m, t;
+            m = i1 - i0;
+            t = i = j = null;
+            while (m) {
+              i = _this.random() * m-- | 0;
+              t = array[m + i0];
+              array[m + i0] = array[i + i0];
+              array[i + i0] = t;
+            }
+            return array;
+          };
+        })(this);
         cells = new Array(width * height);
         frontier = [];
-        this.start = (height - 1) * width;
         cells[this.start] = 0;
         frontier.push({
           index: this.start,

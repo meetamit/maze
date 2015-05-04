@@ -15,7 +15,10 @@
         this.cellSpacing = cellSpacing != null ? cellSpacing : 2;
         this.size = [width, height];
         this.gridSize = [Math.floor((this.size[0] - this.cellSpacing) / (this.cellSize + this.cellSpacing)), Math.floor((this.size[1] - this.cellSpacing) / (this.cellSize + this.cellSpacing))];
-        this.maze = new Maze(this.gridSize);
+        this.maze = new Maze({
+          gridSize: this.gridSize,
+          seed: 2
+        });
         this.cells = this.maze.generate();
       }
 

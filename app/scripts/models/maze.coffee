@@ -7,11 +7,18 @@ define ["lib/d3"], (d3) ->
   E = 1 << 3
 
   class Maze
-    constructor: (@gridSize, start) ->
-      @start = start ? 0# (@gridSize[1] - 1) * @gridSize[0]
+    constructor: (attrs) ->
+      { @gridSize, @seed, start } = attrs
+      @start = start ? (@gridSize[1] - 1) * @gridSize[0]
+    random: ->
+      if @seed?
+        x = Math.sin(@seed++) * 10000;
+        x - Math.floor(x);
+      else
+        Math.random()
     generate: ->
       @cells = @_generateMaze @gridSize
-      @tree = @_generateTree()
+      { @tree, @nodes } = @_generateTree()
       @cells
     neighbor: (index, direction) ->
       switch direction
@@ -21,8 +28,10 @@ define ["lib/d3"], (d3) ->
         when W then index - 1
     _generateTree: ->
       [width, height] = @gridSize
-      visited = d3.range(width * height).map -> false
+      visited = d3.range(width * height).map (n, i) -> false
+      visited[@start] = true
       root = index: @start, children: []
+      nodes = [root]
       frontier = [root]
       while (parent = frontier.pop())?
         cell = @cells[parent.index];
@@ -30,23 +39,28 @@ define ["lib/d3"], (d3) ->
           visited[childIndex] = true
           child = index: childIndex, children: []
           parent.children.push child
+          nodes.push child
           frontier.push child
         if (cell & W && !visited[childIndex = parent.index - 1])
           visited[childIndex] = true
           child = index: childIndex, children: []
           parent.children.push child
+          nodes.push child
           frontier.push child
         if (cell & S && !visited[childIndex = parent.index + width])
           visited[childIndex] = true
           child = index: childIndex, children: []
           parent.children.push child
+          nodes.push child
           frontier.push child
         if (cell & N && !visited[childIndex = parent.index - width])
           visited[childIndex] = true
           child = index: childIndex, children: []
           parent.children.push child
+          nodes.push child
           frontier.push child
-      root
+      tree: root
+      nodes: nodes.sort (a, b) -> d3.ascending a.index, b.index
     _generateMaze: ->
       [width, height] = @gridSize
 
@@ -84,17 +98,16 @@ define ["lib/d3"], (d3) ->
           shuffle(frontier, frontier.length - m, frontier.length)
           return false
 
-      shuffle = (array, i0, i1) ->
+      shuffle = (array, i0, i1) =>
         m = i1 - i0; t = i = j = null
         while (m)
-          i = Math.random() * m-- | 0
+          i = @random() * m-- | 0
           t = array[m + i0]; array[m + i0] = array[i + i0]; array[i + i0] = t
         array
 
       cells = new Array(width * height) # each cell’s edge bits
       frontier = []
 
-      @start = (height - 1) * width
       cells[@start] = 0
       frontier.push index: @start, direction: N
       frontier.push index: @start, direction: E

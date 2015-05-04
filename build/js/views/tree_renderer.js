@@ -40,9 +40,7 @@
         });
         this.layout = d3.layout.tree();
         this.layout.size(this.transpose ? this.inner.concat().reverse() : this.inner);
-        this.nodes = this.layout.nodes(this.world.maze.tree).sort(function(a, b) {
-          return d3.ascending(a.index, b.index);
-        });
+        this.nodes = this.layout.nodes(this.world.maze.tree);
         links = this.layout.links(this.nodes);
         g = this.svg.selectAll("g.links").data([null]);
         g.enter().append("g").attr("class", "links").attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
@@ -62,7 +60,7 @@
         var g, mark, node;
         g = this.svg.selectAll("g.marks").data([null]);
         g.enter().append("g").attr("class", "marks").attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
-        node = this.nodes[this.fairy.index];
+        node = this.world.maze.nodes[this.fairy.index];
         mark = g.selectAll("circle").data([this.fairy]);
         mark.enter().append("circle").attr({
           fill: "orange",
