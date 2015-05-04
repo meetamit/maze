@@ -38,6 +38,18 @@ define ["models/world", "lib/d3"], (World, d3) ->
         .attr
           class: "fairy"
 
+      endPt = @world.indexToPixelPos @world.maze.end.index
+      @endSel = @sel.selectAll(".end")
+        .data [null]
+      @endSel.enter()
+        .append "div"
+        .attr
+          class: "end"
+      @endSel
+        .style
+          left: endPt[0] + "px"
+          top:  endPt[1] + "px"
+
       @update()
     update: ->
       @fairySel

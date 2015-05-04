@@ -23,9 +23,18 @@
       };
 
       Maze.prototype.generate = function() {
-        var ref;
+        var deepest, k, len, node, ref, ref1;
         this.cells = this._generateMaze(this.gridSize);
-        ref = this._generateTree(), this.tree = ref.tree, this.nodes = ref.nodes;
+        ref = this._generateTree(), this.tree = ref.tree, this.nodes = ref.nodes, deepest = ref.deepest;
+        deepest = this.nodes[0];
+        ref1 = this.nodes.slice(1);
+        for (k = 0, len = ref1.length; k < len; k++) {
+          node = ref1[k];
+          if (node.depth > deepest.depth) {
+            deepest = node;
+          }
+        }
+        this.end = deepest;
         return this.cells;
       };
 
@@ -98,8 +107,10 @@
             frontier.push(child);
           }
         }
+        d3.layout.hierarchy()(root);
         return {
           tree: root,
+          deepest: nodes[nodes.length - 1],
           nodes: nodes.sort(function(a, b) {
             return d3.ascending(a.index, b.index);
           })

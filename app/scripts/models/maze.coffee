@@ -18,7 +18,14 @@ define ["lib/d3"], (d3) ->
         Math.random()
     generate: ->
       @cells = @_generateMaze @gridSize
-      { @tree, @nodes } = @_generateTree()
+      { @tree, @nodes, deepest } = @_generateTree()
+
+      # find deepest node
+      deepest = @nodes[0]
+      for node in @nodes[1..]
+        deepest = node if node.depth > deepest.depth
+      @end = deepest
+
       @cells
     neighbor: (index, direction) ->
       switch direction
@@ -59,7 +66,12 @@ define ["lib/d3"], (d3) ->
           parent.children.push child
           nodes.push child
           frontier.push child
+
+      # run a d3 hierarchy layout on the tree, which adds depth info to it
+      d3.layout.hierarchy()(root)
+
       tree: root
+      deepest: nodes[nodes.length - 1]
       nodes: nodes.sort (a, b) -> d3.ascending a.index, b.index
     _generateMaze: ->
       [width, height] = @gridSize

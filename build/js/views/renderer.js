@@ -3,6 +3,7 @@
     var Renderer;
     return Renderer = (function() {
       function Renderer(attrs) {
+        var endPt;
         this.world = attrs.world, this.fairy = attrs.fairy, this.parent = attrs.parent;
         this.dispatch = d3.dispatch("arrowPressed", "cellSelected", "treeToggled");
         d3.rebind(this, this.dispatch, "on", "off");
@@ -34,6 +35,15 @@
         this.fairySel = this.sel.selectAll(".fairy").data([null]);
         this.fairySel.enter().append("div").attr({
           "class": "fairy"
+        });
+        endPt = this.world.indexToPixelPos(this.world.maze.end.index);
+        this.endSel = this.sel.selectAll(".end").data([null]);
+        this.endSel.enter().append("div").attr({
+          "class": "end"
+        });
+        this.endSel.style({
+          left: endPt[0] + "px",
+          top: endPt[1] + "px"
         });
         this.update();
       }
