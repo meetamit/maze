@@ -14,6 +14,8 @@
         }
       };
 
+      Brain.prototype.goto = function(index) {};
+
       return Brain;
 
     })();
@@ -21,12 +23,12 @@
       function Fairy() {
         this.velocity = [0, 0];
         this.brain = new Brain(this);
-        this.dispatch = d3.dispatch("change");
+        this.dispatch = d3.dispatch("indexChanged");
         d3.rebind(this, this.dispatch, "on", "off");
       }
 
       Fairy.prototype.tick = function() {
-        var diff, dist, heading, speed;
+        var diff, dist, heading, previous, speed;
         if (!this.target) {
           return this;
         }
@@ -44,7 +46,11 @@
         this.velocity = [speed * Math.cos(heading), speed * Math.sin(heading)];
         this.pixel[0] += this.velocity[0];
         this.pixel[1] += this.velocity[1];
+        previous = this.index;
         this.index = this.world.pixelPosToIndex(this.pixel);
+        if (this.index !== previous) {
+          this.dispatch.indexChanged(this.index);
+        }
         return this;
       };
 

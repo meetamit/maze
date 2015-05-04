@@ -1,24 +1,36 @@
 (function() {
-  requirejs(["models/world", "models/fairy", "views/renderer"], function(World, Fairy, Renderer) {
-    var fairy, renderer, tick, world;
-    world = window.world = new World(window.innerWidth, window.innerHeight);
-    fairy = window.fairy = new Fairy();
-    fairy.enter(world).transportTo(world.maze.start);
-    renderer = new Renderer({
+  requirejs(["models/world", "models/fairy", "views/renderer", "views/tree_renderer"], function(World, Fairy, Renderer, TreeRenderer) {
+    var tick;
+    this.world = new World(window.innerWidth, window.innerHeight);
+    this.fairy = new Fairy();
+    this.fairy.enter(world).transportTo(world.maze.start).on("indexChanged", (function(_this) {
+      return function(index) {
+        return _this.treeView.updateFairy();
+      };
+    })(this));
+    this.renderer = new Renderer({
       world: world,
-      fairy: fairy
+      fairy: this.fairy
     }).on("arrowPressed", (function(_this) {
       return function(direction) {
-        return fairy.wish().head(direction);
+        return _this.fairy.wish().head(direction);
+      };
+    })(this)).on("treeToggled", (function(_this) {
+      return function() {
+        return _this.treeView.toggle();
       };
     })(this)).on("cellSelected", (function(_this) {
       return function(index) {
-        return fairy.wish().goto(index);
+        return _this.fairy.wish().goto(index);
       };
     })(this));
+    this.treeView = new TreeRenderer({
+      world: world,
+      fairy: this.fairy
+    });
     tick = function() {
-      fairy.tick();
-      renderer.update();
+      this.fairy.tick();
+      this.renderer.update();
       return setTimeout(tick, 30);
     };
     return tick();

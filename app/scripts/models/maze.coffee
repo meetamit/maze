@@ -8,11 +8,11 @@ define ["lib/d3"], (d3) ->
 
   class Maze
     constructor: (@gridSize, start) ->
-      @start = start ? (@gridSize[1] - 1) * @gridSize[0]
-      @cells = @_generateMaze()
-      @tree = @_generateTree()
+      @start = start ? 0# (@gridSize[1] - 1) * @gridSize[0]
     generate: ->
       @cells = @_generateMaze @gridSize
+      @tree = @_generateTree()
+      @cells
     neighbor: (index, direction) ->
       switch direction
         when S then index + @gridSize[1]
@@ -60,7 +60,7 @@ define ["lib/d3"], (d3) ->
         y0 = i0 / width | 0
         open = !cells[i1]? # opposite not yet part of the maze
 
-        if (d0 == N)      then x1 = x0; y1 = y0 - 1; d1 = S
+        if      (d0 == N) then x1 = x0; y1 = y0 - 1; d1 = S
         else if (d0 == S) then x1 = x0; y1 = y0 + 1; d1 = N
         else if (d0 == W) then x1 = x0 - 1; y1 = y0; d1 = E
         else                   x1 = x0 + 1; y1 = y0; d1 = W

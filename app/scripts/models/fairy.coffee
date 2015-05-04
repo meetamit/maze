@@ -7,12 +7,14 @@ define ["models/world", "lib/d3"], (World, d3) ->
       next = @fairy.world.possiblyDue(direction).from @fairy.index
       @fairy.moveTo next if next != @fairy.index
 
+    goto: (index) ->
+
 
   class Fairy
     constructor: ->
       @velocity = [0,0]
       @brain = new Brain @
-      @dispatch = d3.dispatch("change")
+      @dispatch = d3.dispatch("indexChanged")
       d3.rebind @, @dispatch, "on", "off"
     tick: ->
       return @ if !@target
@@ -36,7 +38,12 @@ define ["models/world", "lib/d3"], (World, d3) ->
       ]
       @pixel[0] += @velocity[0]
       @pixel[1] += @velocity[1]
+
+      previous = @index
       @index = @world.pixelPosToIndex @pixel
+
+      if @index != previous
+        @dispatch.indexChanged @index
       @
 
     enter: (@world) -> @

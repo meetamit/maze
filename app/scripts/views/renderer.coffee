@@ -1,9 +1,9 @@
 define ["models/world", "lib/d3"], (World, d3) ->
   class Renderer
     constructor: (attrs) ->
-      { @world, @fairy } = attrs
+      { @world, @fairy, @parent } = attrs
 
-      @dispatch = d3.dispatch("arrowPressed", "cellSelected")
+      @dispatch = d3.dispatch("arrowPressed", "cellSelected", "treeToggled")
       d3.rebind @, @dispatch, "on", "off"
 
       @body = d3.select("body")
@@ -15,7 +15,15 @@ define ["models/world", "lib/d3"], (World, d3) ->
           else        if key is 39 then World.E # right
           @dispatch.arrowPressed direction if direction?
 
-      @sel = @body.append "div"
+          if key is 84 then @dispatch.treeToggled() # T key
+        .on "mousedown.player", =>
+          mouse = d3.mouse @wallsCanvas.node()
+          cell = @world.pixelPosToIndex mouse
+          @dispatch.cellSelected cell
+
+
+      @parent ||= @body
+      @sel = @parent.append "div"
         .attr "class", "world"
 
 

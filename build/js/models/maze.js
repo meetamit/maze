@@ -8,13 +8,13 @@
     return Maze = (function() {
       function Maze(gridSize, start) {
         this.gridSize = gridSize;
-        this.start = start != null ? start : (this.gridSize[1] - 1) * this.gridSize[0];
-        this.cells = this._generateMaze();
-        this.tree = this._generateTree();
+        this.start = start != null ? start : 0;
       }
 
       Maze.prototype.generate = function() {
-        return this.cells = this._generateMaze(this.gridSize);
+        this.cells = this._generateMaze(this.gridSize);
+        this.tree = this._generateTree();
+        return this.cells;
       };
 
       Maze.prototype.neighbor = function(index, direction) {

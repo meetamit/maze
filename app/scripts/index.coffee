@@ -1,28 +1,37 @@
 requirejs [
   "models/world"
   "models/fairy"
-  "views/renderer"], (World, Fairy, Renderer) ->
+  "views/renderer"
+  "views/tree_renderer"], (World, Fairy, Renderer, TreeRenderer) ->
   # Create objects
-  world = window.world = new World(window.innerWidth, window.innerHeight)
-  fairy = window.fairy = new Fairy()
+  @world = new World(window.innerWidth, window.innerHeight)
+  @fairy = new Fairy()
 
   # Start the game
-  fairy
+  @fairy
     .enter world
     .transportTo world.maze.start
+    .on "indexChanged", (index) =>
+      @treeView.updateFairy()
 
   # Initialize the renderer
-  renderer = new Renderer
+  @renderer = new Renderer
     world: world
-    fairy: fairy
+    fairy: @fairy
   .on "arrowPressed", (direction) =>
-    fairy.wish().head direction
+    @fairy.wish().head direction
+  .on "treeToggled", =>
+    @treeView.toggle()
   .on "cellSelected", (index) =>
-    fairy.wish().goto index
+    @fairy.wish().goto index
+
+  @treeView = new TreeRenderer
+    world: world
+    fairy: @fairy
 
   tick = ->
-    fairy.tick()
-    renderer.update()
+    @fairy.tick()
+    @renderer.update()
     setTimeout tick, 30
     # window.requestAnimationFrame tick
 

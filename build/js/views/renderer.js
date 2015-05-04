@@ -3,8 +3,8 @@
     var Renderer;
     return Renderer = (function() {
       function Renderer(attrs) {
-        this.world = attrs.world, this.fairy = attrs.fairy;
-        this.dispatch = d3.dispatch("arrowPressed", "cellSelected");
+        this.world = attrs.world, this.fairy = attrs.fairy, this.parent = attrs.parent;
+        this.dispatch = d3.dispatch("arrowPressed", "cellSelected", "treeToggled");
         d3.rebind(this, this.dispatch, "on", "off");
         this.body = d3.select("body").on("keydown.player", (function(_this) {
           return function() {
@@ -12,11 +12,22 @@
             key = d3.event.keyCode;
             direction = key === 38 ? World.N : key === 40 ? World.S : key === 37 ? World.W : key === 39 ? World.E : void 0;
             if (direction != null) {
-              return _this.dispatch.arrowPressed(direction);
+              _this.dispatch.arrowPressed(direction);
+            }
+            if (key === 84) {
+              return _this.dispatch.treeToggled();
             }
           };
+        })(this)).on("mousedown.player", (function(_this) {
+          return function() {
+            var cell, mouse;
+            mouse = d3.mouse(_this.wallsCanvas.node());
+            cell = _this.world.pixelPosToIndex(mouse);
+            return _this.dispatch.cellSelected(cell);
+          };
         })(this));
-        this.sel = this.body.append("div").attr("class", "world");
+        this.parent || (this.parent = this.body);
+        this.sel = this.parent.append("div").attr("class", "world");
         this.wallsCanvas = this.sel.append("canvas");
         this.wallsCtx = this.wallsCanvas.node().getContext("2d");
         this._renderWalls();
