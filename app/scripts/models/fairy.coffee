@@ -17,8 +17,9 @@ define ["models/world", "lib/d3"], (World, d3) ->
     seek: (node0, node1, decisions = 0, visited = []) ->
       visited.push node0.index
       choices = node0.children
-      # if node0.parent? and node0.parent.index not in visited
-      #   choices.push node0.parent
+      if node0.parent?
+        choices = (choices ? []).concat node0.parent
+      choices = choices.filter (choice) -> choice.index not in visited
 
       # Try to head there in a straight line
       pos0 = @fairy.world.indexToGridPos node0.index
@@ -56,8 +57,8 @@ define ["models/world", "lib/d3"], (World, d3) ->
 
   class Fairy
     constructor: ->
-      @maxSpeed = 10
-      @accel = 2
+      @maxSpeed = 7#10
+      @accel = .8
       @velocity = [0,0]
       @brain = new Brain @
       @dispatch = d3.dispatch("indexChanged")
@@ -69,7 +70,12 @@ define ["models/world", "lib/d3"], (World, d3) ->
         @target.pixel[1] - @pixel[1]
       ]
       dist = Math.sqrt diff[0] * diff[0] + diff[1] * diff[1]
-      if dist < 0.1
+      if @index == @target.index && @plan.length > 0 && dist <= @maxSpeed
+        oldTarget = @target
+        @target = null
+        oldTarget.callback()
+        return @
+      else if dist < 0.1
         @velocity[0] = @velocity[1] = 0
         @pixel[0] = @target.pixel[0]
         @pixel[1] = @target.pixel[1]

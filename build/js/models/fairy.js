@@ -36,6 +36,13 @@
         }
         visited.push(node0.index);
         choices = node0.children;
+        if (node0.parent != null) {
+          choices = (choices != null ? choices : []).concat(node0.parent);
+        }
+        choices = choices.filter(function(choice) {
+          var ref;
+          return ref = choice.index, indexOf.call(visited, ref) < 0;
+        });
         pos0 = this.fairy.world.indexToGridPos(node0.index);
         pos1 = this.fairy.world.indexToGridPos(node1.index);
         if (pos0[0] === pos1[0]) {
@@ -80,8 +87,8 @@
     })();
     return Fairy = (function() {
       function Fairy() {
-        this.maxSpeed = 10;
-        this.accel = 2;
+        this.maxSpeed = 7;
+        this.accel = .8;
         this.velocity = [0, 0];
         this.brain = new Brain(this);
         this.dispatch = d3.dispatch("indexChanged");
@@ -95,7 +102,12 @@
         }
         diff = [this.target.pixel[0] - this.pixel[0], this.target.pixel[1] - this.pixel[1]];
         dist = Math.sqrt(diff[0] * diff[0] + diff[1] * diff[1]);
-        if (dist < 0.1) {
+        if (this.index === this.target.index && this.plan.length > 0 && dist <= this.maxSpeed) {
+          oldTarget = this.target;
+          this.target = null;
+          oldTarget.callback();
+          return this;
+        } else if (dist < 0.1) {
           this.velocity[0] = this.velocity[1] = 0;
           this.pixel[0] = this.target.pixel[0];
           this.pixel[1] = this.target.pixel[1];
