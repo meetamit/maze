@@ -1,3 +1,4 @@
+# TODO .goto() doesn't work when going from 570 to 486 (on a 21 wide maze board)
 define ["models/world", "lib/d3"], (World, d3) ->
   class Brain
     constructor: (fairy) ->
@@ -70,7 +71,7 @@ define ["models/world", "lib/d3"], (World, d3) ->
         @target.pixel[1] - @pixel[1]
       ]
       dist = Math.sqrt diff[0] * diff[0] + diff[1] * diff[1]
-      if @index == @target.index && @plan.length > 0 && dist <= @maxSpeed
+      if @index == @target.index && @plan?.length > 0 && dist <= @maxSpeed
         oldTarget = @target
         @target = null
         oldTarget.callback()
@@ -97,7 +98,7 @@ define ["models/world", "lib/d3"], (World, d3) ->
       @index = @world.pixelPosToIndex @pixel
 
       if @index != previous
-        @dispatch.indexChanged @index
+        @dispatch.indexChanged @index, previous
       @
 
     enter: (@world) -> @

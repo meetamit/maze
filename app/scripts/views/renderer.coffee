@@ -16,7 +16,7 @@ define ["models/world", "lib/d3"], (World, d3) ->
           @dispatch.arrowPressed direction if direction?
 
           if key is 84 then @dispatch.treeToggled() # T key
-        .on "mousedown.player", =>
+        .on "touchstart.player", =>
           mouse = d3.mouse @wallsCanvas.node()
           cell = @world.pixelPosToIndex mouse
           @dispatch.cellSelected cell
@@ -50,12 +50,27 @@ define ["models/world", "lib/d3"], (World, d3) ->
           left: endPt[0] + "px"
           top:  endPt[1] + "px"
 
-      @update()
-    update: ->
+      @tick()
+
+    tick: ->
       @fairySel
         .style
           left: @fairy.pixel[0] + "px"
           top:  @fairy.pixel[1] + "px"
+
+    updateCell: (index) ->
+      cell = @world.cells[index]
+
+      @wallsCtx.fillStyle =
+        if      cell & World.REVISITED then "#311"
+        else if cell & World.OCCUPIED  then "#226"
+        else if cell & World.VISITED   then "#131"
+        else "black"
+
+      @_fillCell index
+      if cell & World.S then @_fillSouth index
+      if cell & World.E then @_fillEast index
+
     _renderWalls: ->
       @wallsCanvas.attr
         width:  @world.size[0]
@@ -70,9 +85,7 @@ define ["models/world", "lib/d3"], (World, d3) ->
       # Fill the walls
       @wallsCtx.fillStyle = "black"
       for cell, i in @world.cells
-        @_fillCell i
-        if cell & World.S then @_fillSouth i
-        if cell & World.E then @_fillEast i
+        @updateCell i
     _fillCell: (index) ->
       i = index % @world.gridSize[0]
       j = index / @world.gridSize[0] | 0;

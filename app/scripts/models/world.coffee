@@ -1,9 +1,15 @@
 define ["models/maze"], (Maze) ->
   class World
+    klass: @ # debug
+
     @N: 1 << 0
     @S: 1 << 1
     @W: 1 << 2
     @E: 1 << 3
+
+    @OCCUPIED:  1 << 4
+    @VISITED:   1 << 5
+    @REVISITED: 1 << 6
 
     constructor: (width, height, @cellSize = 24, @cellSpacing = 2) ->
       @size = [width, height]

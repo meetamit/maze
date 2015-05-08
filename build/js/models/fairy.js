@@ -96,13 +96,13 @@
       }
 
       Fairy.prototype.tick = function() {
-        var diff, dist, heading, oldTarget, previous, speed;
+        var diff, dist, heading, oldTarget, previous, ref, speed;
         if (!this.target) {
           return this;
         }
         diff = [this.target.pixel[0] - this.pixel[0], this.target.pixel[1] - this.pixel[1]];
         dist = Math.sqrt(diff[0] * diff[0] + diff[1] * diff[1]);
-        if (this.index === this.target.index && this.plan.length > 0 && dist <= this.maxSpeed) {
+        if (this.index === this.target.index && ((ref = this.plan) != null ? ref.length : void 0) > 0 && dist <= this.maxSpeed) {
           oldTarget = this.target;
           this.target = null;
           oldTarget.callback();
@@ -124,7 +124,7 @@
         previous = this.index;
         this.index = this.world.pixelPosToIndex(this.pixel);
         if (this.index !== previous) {
-          this.dispatch.indexChanged(this.index);
+          this.dispatch.indexChanged(this.index, previous);
         }
         return this;
       };

@@ -19,7 +19,7 @@
               return _this.dispatch.treeToggled();
             }
           };
-        })(this)).on("mousedown.player", (function(_this) {
+        })(this)).on("touchstart.player", (function(_this) {
           return function() {
             var cell, mouse;
             mouse = d3.mouse(_this.wallsCanvas.node());
@@ -45,14 +45,27 @@
           left: endPt[0] + "px",
           top: endPt[1] + "px"
         });
-        this.update();
+        this.tick();
       }
 
-      Renderer.prototype.update = function() {
+      Renderer.prototype.tick = function() {
         return this.fairySel.style({
           left: this.fairy.pixel[0] + "px",
           top: this.fairy.pixel[1] + "px"
         });
+      };
+
+      Renderer.prototype.updateCell = function(index) {
+        var cell;
+        cell = this.world.cells[index];
+        this.wallsCtx.fillStyle = cell & World.REVISITED ? "#311" : cell & World.OCCUPIED ? "#226" : cell & World.VISITED ? "#131" : "black";
+        this._fillCell(index);
+        if (cell & World.S) {
+          this._fillSouth(index);
+        }
+        if (cell & World.E) {
+          return this._fillEast(index);
+        }
       };
 
       Renderer.prototype._renderWalls = function() {
@@ -68,15 +81,7 @@
         results = [];
         for (i = k = 0, len = ref.length; k < len; i = ++k) {
           cell = ref[i];
-          this._fillCell(i);
-          if (cell & World.S) {
-            this._fillSouth(i);
-          }
-          if (cell & World.E) {
-            results.push(this._fillEast(i));
-          } else {
-            results.push(void 0);
-          }
+          results.push(this.updateCell(i));
         }
         return results;
       };

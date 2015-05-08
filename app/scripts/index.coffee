@@ -9,10 +9,30 @@ requirejs [
 
   # Start the game
   @fairy
-    .enter world
+    .enter @world
     .transportTo world.maze.start
-    .on "indexChanged", (index) =>
+    .on "indexChanged", (index, previous) =>
       @treeView.updateFairy()
+
+      # Game logic
+      prevCell = @world.cells[previous]
+      prevCell &= ~World.OCCUPIED
+
+      newCell = @world.cells[index]
+      newCell |= World.OCCUPIED
+
+      if not (newCell & World.VISITED)
+        newCell |= World.VISITED
+      else
+        newCell |= World.REVISITED
+        prevCell |= World.REVISITED
+
+      @world.cells[previous] = prevCell
+      @world.cells[index] = newCell
+      @renderer.updateCell previous
+      @renderer.updateCell index
+
+
 
   # Initialize the renderer
   @renderer = new Renderer
@@ -31,9 +51,9 @@ requirejs [
 
   tick = ->
     @fairy.tick()
-    @renderer.update()
-    setTimeout tick, 30
-    # window.requestAnimationFrame tick
+    @renderer.tick()
+    # setTimeout tick, 30
+    window.requestAnimationFrame tick
 
   tick()
 

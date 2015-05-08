@@ -2,6 +2,8 @@
   define(["models/maze"], function(Maze) {
     var World;
     return World = (function() {
+      World.prototype.klass = World;
+
       World.N = 1 << 0;
 
       World.S = 1 << 1;
@@ -9,6 +11,12 @@
       World.W = 1 << 2;
 
       World.E = 1 << 3;
+
+      World.OCCUPIED = 1 << 4;
+
+      World.VISITED = 1 << 5;
+
+      World.REVISITED = 1 << 6;
 
       function World(width, height, cellSize, cellSpacing) {
         this.cellSize = cellSize != null ? cellSize : 24;

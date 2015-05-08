@@ -3,9 +3,24 @@
     var tick;
     this.world = new World(window.innerWidth, window.innerHeight);
     this.fairy = new Fairy();
-    this.fairy.enter(world).transportTo(world.maze.start).on("indexChanged", (function(_this) {
-      return function(index) {
-        return _this.treeView.updateFairy();
+    this.fairy.enter(this.world).transportTo(world.maze.start).on("indexChanged", (function(_this) {
+      return function(index, previous) {
+        var newCell, prevCell;
+        _this.treeView.updateFairy();
+        prevCell = _this.world.cells[previous];
+        prevCell &= ~World.OCCUPIED;
+        newCell = _this.world.cells[index];
+        newCell |= World.OCCUPIED;
+        if (!(newCell & World.VISITED)) {
+          newCell |= World.VISITED;
+        } else {
+          newCell |= World.REVISITED;
+          prevCell |= World.REVISITED;
+        }
+        _this.world.cells[previous] = prevCell;
+        _this.world.cells[index] = newCell;
+        _this.renderer.updateCell(previous);
+        return _this.renderer.updateCell(index);
       };
     })(this));
     this.renderer = new Renderer({
@@ -30,8 +45,8 @@
     });
     tick = function() {
       this.fairy.tick();
-      this.renderer.update();
-      return setTimeout(tick, 30);
+      this.renderer.tick();
+      return window.requestAnimationFrame(tick);
     };
     return tick();
   });
