@@ -2,6 +2,10 @@
   define(["models/world", "lib/d3"], function(World, d3) {
     var Renderer;
     return Renderer = (function() {
+      Renderer.prototype.pink = d3.rgb("#f4a");
+
+      Renderer.prototype.black = "#000";
+
       function Renderer(attrs) {
         var endPt;
         this.world = attrs.world, this.fairy = attrs.fairy, this.parent = attrs.parent;
@@ -21,6 +25,10 @@
           };
         })(this)).on("touchstart.player", (function(_this) {
           return function() {
+            return d3.event.preventDefault();
+          };
+        })(this)).on("touchend.player", (function(_this) {
+          return function() {
             var cell, mouse;
             mouse = d3.mouse(_this.wallsCanvas.node());
             cell = _this.world.pixelPosToIndex(mouse);
@@ -35,7 +43,7 @@
         this.fairySel = this.sel.selectAll(".fairy").data([null]);
         this.fairySel.enter().append("div").attr({
           "class": "fairy"
-        });
+        }).style("background", String(this.pink));
         endPt = this.world.indexToPixelPos(this.world.maze.end.index);
         this.endSel = this.sel.selectAll(".end").data([null]);
         this.endSel.enter().append("div").attr({
@@ -56,15 +64,19 @@
       };
 
       Renderer.prototype.updateCell = function(index) {
-        var cell;
+        var cell, fill, gap;
         cell = this.world.cells[index];
-        this.wallsCtx.fillStyle = cell & World.REVISITED ? "#311" : cell & World.OCCUPIED ? "#226" : cell & World.VISITED ? "#131" : "black";
-        this._fillCell(index);
+        fill = cell & World.REVISITED ? "#393939" : cell & World.OCCUPIED ? String(this.pink.darker(3)) : cell & World.VISITED ? String(this.pink.darker(3)) : this.black;
+        if (cell >> 4) {
+          gap = 4;
+        }
+        this.wallsCtx.fillStyle = fill;
+        this._fillCell(index, gap);
         if (cell & World.S) {
-          this._fillSouth(index);
+          this._fillSouth(index, gap);
         }
         if (cell & World.E) {
-          return this._fillEast(index);
+          return this._fillEast(index, gap);
         }
       };
 
@@ -74,9 +86,8 @@
           width: this.world.size[0],
           height: this.world.size[1]
         });
-        this.wallsCtx.fillStyle = "white";
+        this.wallsCtx.fillStyle = String(this.pink);
         this.wallsCtx.fillRect(0, 0, (this.world.cellSize + this.world.cellSpacing) * this.world.gridSize[0] + this.world.cellSpacing, (this.world.cellSize + this.world.cellSpacing) * this.world.gridSize[1] + this.world.cellSpacing);
-        this.wallsCtx.fillStyle = "black";
         ref = this.world.cells;
         results = [];
         for (i = k = 0, len = ref.length; k < len; i = ++k) {
@@ -86,25 +97,34 @@
         return results;
       };
 
-      Renderer.prototype._fillCell = function(index) {
+      Renderer.prototype._fillCell = function(index, gap) {
         var i, j;
+        if (gap == null) {
+          gap = 0;
+        }
         i = index % this.world.gridSize[0];
         j = index / this.world.gridSize[0] | 0;
-        return this.wallsCtx.fillRect(i * this.world.cellSize + (i + 1) * this.world.cellSpacing, j * this.world.cellSize + (j + 1) * this.world.cellSpacing, this.world.cellSize, this.world.cellSize);
+        return this.wallsCtx.fillRect(i * this.world.cellSize + (i + 1) * this.world.cellSpacing + gap, j * this.world.cellSize + (j + 1) * this.world.cellSpacing + gap, this.world.cellSize - gap * 2, this.world.cellSize - gap * 2);
       };
 
-      Renderer.prototype._fillEast = function(index) {
+      Renderer.prototype._fillEast = function(index, gap) {
         var i, j;
+        if (gap == null) {
+          gap = 0;
+        }
         i = index % this.world.gridSize[0];
         j = index / this.world.gridSize[0] | 0;
-        return this.wallsCtx.fillRect((i + 1) * (this.world.cellSize + this.world.cellSpacing), j * this.world.cellSize + (j + 1) * this.world.cellSpacing, this.world.cellSpacing, this.world.cellSize);
+        return this.wallsCtx.fillRect((i + 1) * (this.world.cellSize + this.world.cellSpacing) - gap, j * this.world.cellSize + (j + 1) * this.world.cellSpacing + gap, this.world.cellSpacing + gap * 2, this.world.cellSize - gap * 2);
       };
 
-      Renderer.prototype._fillSouth = function(index) {
+      Renderer.prototype._fillSouth = function(index, gap) {
         var i, j;
+        if (gap == null) {
+          gap = 0;
+        }
         i = index % this.world.gridSize[0];
         j = index / this.world.gridSize[0] | 0;
-        return this.wallsCtx.fillRect(i * this.world.cellSize + (i + 1) * this.world.cellSpacing, (j + 1) * (this.world.cellSize + this.world.cellSpacing), this.world.cellSize, this.world.cellSpacing);
+        return this.wallsCtx.fillRect(i * this.world.cellSize + (i + 1) * this.world.cellSpacing + gap, (j + 1) * (this.world.cellSize + this.world.cellSpacing) - gap, this.world.cellSize - gap * 2, this.world.cellSpacing + gap * 2);
       };
 
       return Renderer;

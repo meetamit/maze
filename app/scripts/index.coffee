@@ -32,8 +32,6 @@ requirejs [
       @renderer.updateCell previous
       @renderer.updateCell index
 
-
-
   # Initialize the renderer
   @renderer = new Renderer
     world: world
@@ -53,8 +51,11 @@ requirejs [
     @fairy.tick()
     @renderer.tick()
     # setTimeout tick, 30
-    window.requestAnimationFrame tick
+    window.requestAnimationFrame tick.bind(@)
 
+
+  @world.cells[@fairy.index] |= World.OCCUPIED | World.VISITED
+  @renderer.updateCell @fairy.index
   tick()
 
   # class Judge

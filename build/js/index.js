@@ -46,8 +46,10 @@
     tick = function() {
       this.fairy.tick();
       this.renderer.tick();
-      return window.requestAnimationFrame(tick);
+      return window.requestAnimationFrame(tick.bind(this));
     };
+    this.world.cells[this.fairy.index] |= World.OCCUPIED | World.VISITED;
+    this.renderer.updateCell(this.fairy.index);
     return tick();
   });
 

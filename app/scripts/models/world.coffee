@@ -11,7 +11,7 @@ define ["models/maze"], (Maze) ->
     @VISITED:   1 << 5
     @REVISITED: 1 << 6
 
-    constructor: (width, height, @cellSize = 24, @cellSpacing = 2) ->
+    constructor: (width, height, @cellSize = 29, @cellSpacing = 2) ->
       @size = [width, height]
       @gridSize = [
         Math.floor (@size[0] - @cellSpacing) / (@cellSize + @cellSpacing)
@@ -20,7 +20,7 @@ define ["models/maze"], (Maze) ->
 
       @maze = new Maze
         gridSize: @gridSize
-        seed: 2
+        seed: 2#Math.random()
       @cells = @maze.generate()
 
     indexToGridPos: (index) ->

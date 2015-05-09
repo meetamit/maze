@@ -19,7 +19,7 @@
       World.REVISITED = 1 << 6;
 
       function World(width, height, cellSize, cellSpacing) {
-        this.cellSize = cellSize != null ? cellSize : 24;
+        this.cellSize = cellSize != null ? cellSize : 29;
         this.cellSpacing = cellSpacing != null ? cellSpacing : 2;
         this.size = [width, height];
         this.gridSize = [Math.floor((this.size[0] - this.cellSpacing) / (this.cellSize + this.cellSpacing)), Math.floor((this.size[1] - this.cellSpacing) / (this.cellSize + this.cellSpacing))];
