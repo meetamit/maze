@@ -19,16 +19,23 @@
       World.REVISITED = 1 << 6;
 
       function World(width, height, cellSize, cellSpacing) {
-        this.cellSize = cellSize != null ? cellSize : 29;
+        this.cellSize = cellSize != null ? cellSize : 26;
         this.cellSpacing = cellSpacing != null ? cellSpacing : 2;
         this.size = [width, height];
         this.gridSize = [Math.floor((this.size[0] - this.cellSpacing) / (this.cellSize + this.cellSpacing)), Math.floor((this.size[1] - this.cellSpacing) / (this.cellSize + this.cellSpacing))];
+        this.requiredSize = [this.gridSize[0] * (this.cellSize + this.cellSpacing) + this.cellSpacing, this.gridSize[1] * (this.cellSize + this.cellSpacing) + this.cellSpacing];
+      }
+
+      World.prototype.build = function(seed) {
+        if (seed == null) {
+          seed = Math.random();
+        }
         this.maze = new Maze({
           gridSize: this.gridSize,
-          seed: 2
+          seed: seed
         });
-        this.cells = this.maze.generate();
-      }
+        return this.cells = this.maze.generate();
+      };
 
       World.prototype.indexToGridPos = function(index) {
         return [index % this.gridSize[0], Math.floor(index / this.gridSize[0])];

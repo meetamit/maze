@@ -2,8 +2,12 @@
   "name": "fairy-maze",
   "version": "0.0.1",
   "homepage": "https://github.com/meetamit/fairy-maze",
-  "authors": ["Amit Schechter"],
-  "moduleType": ["amd"],
+  "authors": [
+    "Amit Schechter"
+  ],
+  "moduleType": [
+    "amd"
+  ],
   "license": "MIT",
   "private": true,
   "ignore": [
@@ -12,6 +16,7 @@
   ],
   "dependencies": {
     "requirejs": "~2.1.11",
-    "d3": "~3.4.4"
+    "d3": "~3.4.4",
+    "director": "~1.2.8"
   }
 }

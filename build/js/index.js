@@ -1,9 +1,9 @@
 (function() {
-  requirejs(["models/world", "models/fairy", "views/renderer", "views/tree_renderer"], function(World, Fairy, Renderer, TreeRenderer) {
+  requirejs(["models/world", "models/fairy", "views/renderer", "views/tree_renderer", "lib/director"], function(World, Fairy, Renderer, TreeRenderer, Director) {
     var tick;
     this.world = new World(window.innerWidth, window.innerHeight);
     this.fairy = new Fairy();
-    this.fairy.enter(this.world).transportTo(world.maze.start).on("indexChanged", (function(_this) {
+    this.fairy.enter(this.world).on("indexChanged", (function(_this) {
       return function(index, previous) {
         var newCell, prevCell;
         _this.treeView.updateFairy();
@@ -44,13 +44,30 @@
       fairy: this.fairy
     });
     tick = function() {
+      this.running = true;
       this.fairy.tick();
       this.renderer.tick();
       return window.requestAnimationFrame(tick.bind(this));
     };
-    this.world.cells[this.fairy.index] |= World.OCCUPIED | World.VISITED;
-    this.renderer.updateCell(this.fairy.index);
-    return tick();
+    this.router = Router({
+      "/": function() {
+        return this.setRoute("/game/1");
+      },
+      "/game/:seed": (function(_this) {
+        return function(seed) {
+          _this.world.build(seed);
+          _this.fairy.transportTo(world.maze.start);
+          _this.world.cells[_this.fairy.index] |= World.OCCUPIED | World.VISITED;
+          _this.renderer.paint();
+          _this.treeView.paint();
+          _this.renderer.updateCell(_this.fairy.index);
+          if (!_this.running) {
+            return tick();
+          }
+        };
+      })(this)
+    });
+    return router.init("/");
   });
 
 }).call(this);

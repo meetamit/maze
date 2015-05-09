@@ -15,17 +15,16 @@ define ['lib/d3'], (d3) ->
         .style "display", "none"
 
       @layout = d3.layout.tree()
-      @update()
 
       d3.select(window)
         .on "resize", =>
-          @update()
+          @paint()
 
     toggle: ->
       @isVisible = not @isVisible
       @sel.style "display", if @isVisible then "" else "none"
 
-    update: ->
+    paint: ->
       @size = [
         @parent.node().offsetWidth
         @parent.node().offsetHeight

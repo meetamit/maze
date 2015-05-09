@@ -7,7 +7,6 @@
       Renderer.prototype.black = "#000";
 
       function Renderer(attrs) {
-        var endPt;
         this.world = attrs.world, this.fairy = attrs.fairy, this.parent = attrs.parent;
         this.dispatch = d3.dispatch("arrowPressed", "cellSelected", "treeToggled");
         d3.rebind(this, this.dispatch, "on", "off");
@@ -23,7 +22,9 @@
               return _this.dispatch.treeToggled();
             }
           };
-        })(this)).on("touchstart.player", (function(_this) {
+        })(this));
+        this.parent || (this.parent = this.body);
+        this.sel = this.parent.append("div").attr("class", "world").on("touchstart.player", (function(_this) {
           return function() {
             return d3.event.preventDefault();
           };
@@ -35,25 +36,16 @@
             return _this.dispatch.cellSelected(cell);
           };
         })(this));
-        this.parent || (this.parent = this.body);
-        this.sel = this.parent.append("div").attr("class", "world");
         this.wallsCanvas = this.sel.append("canvas");
         this.wallsCtx = this.wallsCanvas.node().getContext("2d");
-        this._renderWalls();
         this.fairySel = this.sel.selectAll(".fairy").data([null]);
         this.fairySel.enter().append("div").attr({
           "class": "fairy"
         }).style("background", String(this.pink));
-        endPt = this.world.indexToPixelPos(this.world.maze.end.index);
         this.endSel = this.sel.selectAll(".end").data([null]);
         this.endSel.enter().append("div").attr({
           "class": "end"
         });
-        this.endSel.style({
-          left: endPt[0] + "px",
-          top: endPt[1] + "px"
-        });
-        this.tick();
       }
 
       Renderer.prototype.tick = function() {
@@ -63,38 +55,49 @@
         });
       };
 
-      Renderer.prototype.updateCell = function(index) {
-        var cell, fill, gap;
+      Renderer.prototype.updateCell = function(index, forceFull) {
+        var allowEast, allowSouth, cell, fill, gap;
+        if (forceFull == null) {
+          forceFull = false;
+        }
         cell = this.world.cells[index];
         fill = cell & World.REVISITED ? "#393939" : cell & World.OCCUPIED ? String(this.pink.darker(3)) : cell & World.VISITED ? String(this.pink.darker(3)) : this.black;
-        if (cell >> 4) {
-          gap = 4;
+        if (forceFull) {
+          fill = this.black;
+        }
+        if ((cell >> 4) && !forceFull) {
+          gap = 6;
         }
         this.wallsCtx.fillStyle = fill;
         this._fillCell(index, gap);
-        if (cell & World.S) {
+        allowSouth = forceFull || (this.world.cells[this.world.due(World.S).from(index)] & World.VISITED);
+        allowEast = forceFull || (this.world.cells[this.world.due(World.E).from(index)] & World.VISITED);
+        if ((cell & World.S) && allowSouth) {
           this._fillSouth(index, gap);
         }
-        if (cell & World.E) {
+        if ((cell & World.E) && allowEast) {
           return this._fillEast(index, gap);
         }
       };
 
-      Renderer.prototype._renderWalls = function() {
-        var cell, i, k, len, ref, results;
+      Renderer.prototype.paint = function() {
+        var cell, endPt, i, k, len, ref;
         this.wallsCanvas.attr({
-          width: this.world.size[0],
-          height: this.world.size[1]
+          width: this.world.requiredSize[0],
+          height: this.world.requiredSize[1]
         });
         this.wallsCtx.fillStyle = String(this.pink);
         this.wallsCtx.fillRect(0, 0, (this.world.cellSize + this.world.cellSpacing) * this.world.gridSize[0] + this.world.cellSpacing, (this.world.cellSize + this.world.cellSpacing) * this.world.gridSize[1] + this.world.cellSpacing);
         ref = this.world.cells;
-        results = [];
         for (i = k = 0, len = ref.length; k < len; i = ++k) {
           cell = ref[i];
-          results.push(this.updateCell(i));
+          this.updateCell(i, true);
         }
-        return results;
+        endPt = this.world.indexToPixelPos(this.world.maze.end.index);
+        return this.endSel.style({
+          left: endPt[0] + "px",
+          top: endPt[1] + "px"
+        });
       };
 
       Renderer.prototype._fillCell = function(index, gap) {

@@ -11,16 +11,21 @@ define ["models/maze"], (Maze) ->
     @VISITED:   1 << 5
     @REVISITED: 1 << 6
 
-    constructor: (width, height, @cellSize = 29, @cellSpacing = 2) ->
+    constructor: (width, height, @cellSize = 26, @cellSpacing = 2) ->
       @size = [width, height]
       @gridSize = [
         Math.floor (@size[0] - @cellSpacing) / (@cellSize + @cellSpacing)
         Math.floor (@size[1] - @cellSpacing) / (@cellSize + @cellSpacing)
       ]
+      @requiredSize = [
+        @gridSize[0] * (@cellSize + @cellSpacing) + @cellSpacing
+        @gridSize[1] * (@cellSize + @cellSpacing) + @cellSpacing
+      ]
 
+    build: (seed = Math.random()) ->
       @maze = new Maze
         gridSize: @gridSize
-        seed: 2#Math.random()
+        seed: seed
       @cells = @maze.generate()
 
     indexToGridPos: (index) ->

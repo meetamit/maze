@@ -30,6 +30,9 @@ module.exports = (grunt) ->
         ,
           src: "bower_components/requirejs/require.js"
           dest: "build/js/lib/require.js"
+        ,
+          src: "bower_components/director/build/director.min.js"
+          dest: "build/js/lib/director.js"
         ]
 
     watch:

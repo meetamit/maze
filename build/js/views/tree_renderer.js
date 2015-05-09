@@ -14,10 +14,9 @@
         this.parent || (this.parent = d3.select("body"));
         this.sel = this.parent.append("div").attr("class", "tree").style("display", "none");
         this.layout = d3.layout.tree();
-        this.update();
         d3.select(window).on("resize", (function(_this) {
           return function() {
-            return _this.update();
+            return _this.paint();
           };
         })(this));
       }
@@ -27,7 +26,7 @@
         return this.sel.style("display", this.isVisible ? "" : "none");
       };
 
-      TreeRenderer.prototype.update = function() {
+      TreeRenderer.prototype.paint = function() {
         var g, link, links;
         this.size = [this.parent.node().offsetWidth, this.parent.node().offsetHeight];
         this.inner = [this.size[0] - this.margin.left - this.margin.right, this.size[1] - this.margin.top - this.margin.bottom];

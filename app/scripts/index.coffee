@@ -2,7 +2,9 @@ requirejs [
   "models/world"
   "models/fairy"
   "views/renderer"
-  "views/tree_renderer"], (World, Fairy, Renderer, TreeRenderer) ->
+  "views/tree_renderer"
+  "lib/director"
+], (World, Fairy, Renderer, TreeRenderer, Director) ->
   # Create objects
   @world = new World(window.innerWidth, window.innerHeight)
   @fairy = new Fairy()
@@ -10,7 +12,6 @@ requirejs [
   # Start the game
   @fairy
     .enter @world
-    .transportTo world.maze.start
     .on "indexChanged", (index, previous) =>
       @treeView.updateFairy()
 
@@ -48,18 +49,26 @@ requirejs [
     fairy: @fairy
 
   tick = ->
+    @running = true
     @fairy.tick()
     @renderer.tick()
-    # setTimeout tick, 30
     window.requestAnimationFrame tick.bind(@)
 
+  @router = Router
+    "/": ->
+      this.setRoute "/game/1"
+    "/game/:seed": (seed) =>
+      @world.build seed
+      @fairy
+        .transportTo world.maze.start
 
-  @world.cells[@fairy.index] |= World.OCCUPIED | World.VISITED
-  @renderer.updateCell @fairy.index
-  tick()
+      # Game logic
+      @world.cells[@fairy.index] |= World.OCCUPIED | World.VISITED
 
-  # class Judge
-  #   constructor: (@fairy) ->
-  #     @fairy.on "change_cell", (to, from) ->
-  #   setWorld: (@maze) ->
-  #     @tree = @_generateTree @maze
+      @renderer.paint()
+      @treeView.paint()
+      @renderer.updateCell @fairy.index
+      tick() unless @running
+
+
+  router.init "/"
