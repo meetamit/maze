@@ -6,9 +6,17 @@
         this.dispatch = d3.dispatch("gameStarted");
         this.storage = new LocalStorageManager;
         d3.rebind(this, this.dispatch, "on", "off");
-        this.density = Number(this.storage.getItem("density"));
+        this.density = this.storage.getItem("density");
         if (this.density == null) {
           this.setDensity(12);
+        } else {
+          this.density = Number(this.density);
+        }
+        this.showTrail = this.storage.getItem("showTrail");
+        if (this.showTrail == null) {
+          this.toggleTrail(false);
+        } else {
+          this.showTrail = this.showTrail === "true";
         }
         this.world = new World(window.innerWidth, window.innerHeight);
         this.fairy = new Fairy;
@@ -49,6 +57,11 @@
         }
         this.density = density;
         return this.storage.setItem("density", this.density);
+      };
+
+      Game.prototype.toggleTrail = function(force) {
+        this.showTrail = force != null ? force : !this.showTrail;
+        return this.storage.setItem("showTrail", String(this.showTrail));
       };
 
       Game.prototype.tick = function() {

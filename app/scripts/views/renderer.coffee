@@ -60,11 +60,16 @@ define ["models/world", "lib/d3"], (World, d3) ->
           height: sz + "px"
           margin: -sz/2 + "px"
 
+    showTrail: (@_showTrail) ->
+      @paint() if @world.requiredSize?[0]
+      @
+
     updateCell: (index, forceFull = false) ->
       cell = @world.cells[index]
 
       fill =
-        if      cell & World.REVISITED then "#393939"
+        if !@_showTrail then @black
+        else if cell & World.REVISITED then "#393939"
         else if cell & World.OCCUPIED  then String @pink.darker(2)
         else if cell & World.VISITED   then String @pink.darker(3)
         else @black
@@ -92,6 +97,7 @@ define ["models/world", "lib/d3"], (World, d3) ->
         (@world.cellSize + @world.cellSpacing) * @world.gridSize[1] + @world.cellSpacing
       )
       @updateCell i, true for cell, i in @world.cells
+      @updateCell i, false for cell, i in @world.cells
 
       endPt = @world.indexToPixelPos @world.maze.end.index
       @endSel

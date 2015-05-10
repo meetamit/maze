@@ -48,13 +48,26 @@
         color: black;
         font-size: 3.6em;
         background: #ff83c7;
+        border: 4px;
         display: inline-block;
         width: 80px;
         height: 80px;
         line-height: 85px;
         border-radius: 100%;
+        border: 4px solid #ff83c7;
+        overflow: hidden;
+        margin: 5px 20px
       }
 
+      #top {
+        padding: 20px 0;
+      }
+      #resets {
+        display: inline-block;
+      }
+      .labeled-slider {
+        padding-top: 20px;
+      }
       .labeled-slider > label {
         font-size: 1.2em;
         vertical-align: middle;
@@ -64,15 +77,26 @@
         vertical-align: middle;
       }
 
+      .round-button.checkbox {
+        background: #4e002a;
+        color: inherit;
+        line-height: 72px;
+      }
+      .round-button.checkbox.checked {
+        background: #ff83c7;
+        color: black;
+      }
+
     </style>
   </head>
   <body>
     <script src="js/lib/require.js" data-main="js/index.js" ></script>
-    <div>
+    <div id="top">
       <div id="resets">
         <div id="restart" style="display:none;" class="round-button">&#x21bb;</div>
         <div id="random"  style="display:none;" class="round-button">?</div>
       </div>
+      <div id="trail" class="round-button checkbox">⇝</div>
       <div class="labeled-slider">
         <label>Density</label>
         <input id="density" type="range" min="5" max="40", step="1">

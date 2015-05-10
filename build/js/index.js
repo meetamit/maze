@@ -16,7 +16,7 @@
     this.renderer = new Renderer({
       world: this.game.world,
       fairy: this.game.fairy
-    }).on("arrowPressed", (function(_this) {
+    }).showTrail(this.game.showTrail).on("arrowPressed", (function(_this) {
       return function(direction) {
         return _this.game.fairy.wish().head(direction);
       };
@@ -48,6 +48,13 @@
       return function() {
         _this.game.setDensity(Number(_this.density.property("value")));
         return startGame(_this.game.seed);
+      };
+    })(this));
+    this.trail = d3.select("#trail").classed("checked", this.game.showTrail).on("click", (function(_this) {
+      return function() {
+        _this.game.toggleTrail();
+        _this.trail.classed("checked", _this.game.showTrail);
+        return _this.renderer.showTrail(_this.game.showTrail);
       };
     })(this));
     isTicking = false;

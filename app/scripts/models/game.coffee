@@ -5,8 +5,13 @@ define ["models/world", "models/fairy"], (World, Fairy) ->
       @storage = new LocalStorageManager
       d3.rebind @, @dispatch, "on", "off"
 
-      @density = Number @storage.getItem "density"
+      @density = @storage.getItem "density"
       if !@density? then @setDensity 12
+      else @density = Number @density
+
+      @showTrail = @storage.getItem "showTrail"
+      if !@showTrail? then @toggleTrail false
+      else @showTrail = @showTrail == "true"
 
       @world = new World window.innerWidth, window.innerHeight
       @fairy = new Fairy
@@ -42,6 +47,9 @@ define ["models/world", "models/fairy"], (World, Fairy) ->
     setDensity: (density = @density) ->
       @density = density
       @storage.setItem "density", @density
+    toggleTrail: (force) ->
+      @showTrail = force ? not @showTrail
+      @storage.setItem "showTrail", String @showTrail
 
     tick: ->
       @fairy.tick()

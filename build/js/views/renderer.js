@@ -63,13 +63,22 @@
         });
       };
 
+      Renderer.prototype.showTrail = function(_showTrail) {
+        var ref;
+        this._showTrail = _showTrail;
+        if ((ref = this.world.requiredSize) != null ? ref[0] : void 0) {
+          this.paint();
+        }
+        return this;
+      };
+
       Renderer.prototype.updateCell = function(index, forceFull) {
         var allowEast, allowSouth, cell, fill, gap;
         if (forceFull == null) {
           forceFull = false;
         }
         cell = this.world.cells[index];
-        fill = cell & World.REVISITED ? "#393939" : cell & World.OCCUPIED ? String(this.pink.darker(2)) : cell & World.VISITED ? String(this.pink.darker(3)) : this.black;
+        fill = !this._showTrail ? this.black : cell & World.REVISITED ? "#393939" : cell & World.OCCUPIED ? String(this.pink.darker(2)) : cell & World.VISITED ? String(this.pink.darker(3)) : this.black;
         if (forceFull) {
           fill = this.black;
         }
@@ -89,7 +98,7 @@
       };
 
       Renderer.prototype.paint = function() {
-        var cell, endPt, i, k, len, ref;
+        var cell, endPt, i, k, l, len, len1, ref, ref1;
         this.wallsCanvas.attr({
           width: this.world.requiredSize[0],
           height: this.world.requiredSize[1]
@@ -100,6 +109,11 @@
         for (i = k = 0, len = ref.length; k < len; i = ++k) {
           cell = ref[i];
           this.updateCell(i, true);
+        }
+        ref1 = this.world.cells;
+        for (i = l = 0, len1 = ref1.length; l < len1; i = ++l) {
+          cell = ref1[i];
+          this.updateCell(i, false);
         }
         endPt = this.world.indexToPixelPos(this.world.maze.end.index);
         return this.endSel.style({

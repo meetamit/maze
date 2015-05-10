@@ -20,6 +20,7 @@ requirejs [
   @renderer = new Renderer
     world: @game.world
     fairy: @game.fairy
+  .showTrail @game.showTrail
   .on "arrowPressed", (direction) =>
     @game.fairy.wish().head direction
   .on "cellSelected", (index) =>
@@ -44,6 +45,12 @@ requirejs [
     .on "change", =>
       @game.setDensity Number @density.property "value"
       startGame @game.seed
+  @trail = d3.select "#trail"
+    .classed "checked", @game.showTrail
+    .on "click", =>
+      @game.toggleTrail()
+      @trail.classed "checked", @game.showTrail
+      @renderer.showTrail @game.showTrail
 
   isTicking = false
   tick = ->
