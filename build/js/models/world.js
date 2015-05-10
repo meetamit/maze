@@ -22,14 +22,18 @@
         this.cellSize = cellSize != null ? cellSize : 26;
         this.cellSpacing = cellSpacing != null ? cellSpacing : 2;
         this.size = [width, height];
-        this.gridSize = [Math.floor((this.size[0] - this.cellSpacing) / (this.cellSize + this.cellSpacing)), Math.floor((this.size[1] - this.cellSpacing) / (this.cellSize + this.cellSpacing))];
-        this.requiredSize = [this.gridSize[0] * (this.cellSize + this.cellSpacing) + this.cellSpacing, this.gridSize[1] * (this.cellSize + this.cellSpacing) + this.cellSpacing];
       }
 
-      World.prototype.build = function(seed) {
+      World.prototype.build = function(seed, density) {
         if (seed == null) {
           seed = Math.random();
         }
+        if (density == null) {
+          density = 12;
+        }
+        this.cellSize = -this.cellSpacing + Math.floor((this.size[0] - this.cellSpacing) / density);
+        this.gridSize = [Math.floor((this.size[0] - this.cellSpacing) / (this.cellSize + this.cellSpacing)), Math.floor((this.size[1] - this.cellSpacing) / (this.cellSize + this.cellSpacing))];
+        this.requiredSize = [this.gridSize[0] * (this.cellSize + this.cellSpacing) + this.cellSpacing, this.gridSize[1] * (this.cellSize + this.cellSpacing) + this.cellSpacing];
         this.maze = new Maze({
           gridSize: this.gridSize,
           seed: seed,

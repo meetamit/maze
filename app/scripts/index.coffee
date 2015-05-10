@@ -39,6 +39,12 @@ requirejs [
     .on "click", =>
       @router.setRoute "/game/" + Math.floor(Math.random() * 100)
 
+  @density = d3.select "#density"
+    .attr "max", window.innerWidth / 15
+    .on "change", =>
+      @game.setDensity Number @density.property "value"
+      startGame @game.seed
+
   isTicking = false
   tick = ->
     isTicking = true
@@ -48,6 +54,7 @@ requirejs [
 
   startGame = (seed) =>
     @updateResets("random")
+    @density.property("value", @game.density)
     @game.build seed
     @renderer.paint()
     @treeView.paint()

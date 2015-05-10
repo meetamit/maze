@@ -13,6 +13,9 @@ define ["models/maze"], (Maze) ->
 
     constructor: (width, height, @cellSize = 26, @cellSpacing = 2) ->
       @size = [width, height]
+
+    build: (seed = Math.random(), density = 12) ->
+      @cellSize = -@cellSpacing + Math.floor (@size[0] - @cellSpacing) / density
       @gridSize = [
         Math.floor (@size[0] - @cellSpacing) / (@cellSize + @cellSpacing)
         Math.floor (@size[1] - @cellSpacing) / (@cellSize + @cellSpacing)
@@ -21,8 +24,6 @@ define ["models/maze"], (Maze) ->
         @gridSize[0] * (@cellSize + @cellSpacing) + @cellSpacing
         @gridSize[1] * (@cellSize + @cellSpacing) + @cellSpacing
       ]
-
-    build: (seed = Math.random()) ->
       @maze = new Maze
         gridSize: @gridSize
         seed: seed

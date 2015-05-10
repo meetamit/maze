@@ -3,12 +3,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
       body {
-        /*overflow: hidden;*/
+        overflow: auto;
         margin: 0;
         background: black;
-        /*height: 800px;*/
+        color: #ff83c7;
         text-align: center;
-        font-family: "Helvetica", Helvetica, Arial, sans-serif
+        font-family: "Helvetica", Helvetica, Arial, sans-serif;
+        font-weight: 700;
+        font-size: 16px;
       }
 
       .world {
@@ -43,7 +45,6 @@
       .tree svg path { stroke: white; fill: none; }
 
       .round-button {
-        font-weight: 700;
         color: black;
         font-size: 3.6em;
         background: #ff83c7;
@@ -54,6 +55,15 @@
         border-radius: 100%;
       }
 
+      .labeled-slider > label {
+        font-size: 1.2em;
+        vertical-align: middle;
+      }
+      .labeled-slider input {
+        width: 60%;
+        vertical-align: middle;
+      }
+
     </style>
   </head>
   <body>
@@ -62,6 +72,10 @@
       <div id="resets">
         <div id="restart" style="display:none;" class="round-button">&#x21bb;</div>
         <div id="random"  style="display:none;" class="round-button">?</div>
+      </div>
+      <div class="labeled-slider">
+        <label>Density</label>
+        <input id="density" type="range" min="5" max="40", step="1">
       </div>
     </div>
   </body>

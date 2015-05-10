@@ -23,8 +23,10 @@ define ["models/world", "lib/d3"], (World, d3) ->
       @sel = @parent.append "div"
         .attr "class", "world"
         .on "touchstart.player", =>
-          d3.event.preventDefault()
+          # d3.event.preventDefault()
+          @_scrollAtStart = window.scrollY
         .on "touchend.player", =>
+          return if window.scrollY != @_scrollAtStart
           mouse = d3.mouse @wallsCanvas.node()
           cell = @world.pixelPosToIndex mouse
           @dispatch.cellSelected cell
@@ -49,17 +51,21 @@ define ["models/world", "lib/d3"], (World, d3) ->
           class: "end"
 
     tick: ->
+      sz = Math.max 11, @world.cellSize - 18
       @fairySel
         .style
           left: @fairy.pixel[0] + "px"
           top:  @fairy.pixel[1] + "px"
+          width:  sz + "px"
+          height: sz + "px"
+          margin: -sz/2 + "px"
 
     updateCell: (index, forceFull = false) ->
       cell = @world.cells[index]
 
       fill =
         if      cell & World.REVISITED then "#393939"
-        else if cell & World.OCCUPIED  then String @pink.darker(3)
+        else if cell & World.OCCUPIED  then String @pink.darker(2)
         else if cell & World.VISITED   then String @pink.darker(3)
         else @black
       if forceFull then fill = @black

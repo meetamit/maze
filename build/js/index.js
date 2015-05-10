@@ -44,6 +44,12 @@
         return _this.router.setRoute("/game/" + Math.floor(Math.random() * 100));
       };
     })(this));
+    this.density = d3.select("#density").attr("max", window.innerWidth / 15).on("change", (function(_this) {
+      return function() {
+        _this.game.setDensity(Number(_this.density.property("value")));
+        return startGame(_this.game.seed);
+      };
+    })(this));
     isTicking = false;
     tick = function() {
       isTicking = true;
@@ -54,6 +60,7 @@
     startGame = (function(_this) {
       return function(seed) {
         _this.updateResets("random");
+        _this.density.property("value", _this.game.density);
         _this.game.build(seed);
         _this.renderer.paint();
         _this.treeView.paint();

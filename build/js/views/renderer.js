@@ -26,11 +26,14 @@
         this.parent || (this.parent = this.body);
         this.sel = this.parent.append("div").attr("class", "world").on("touchstart.player", (function(_this) {
           return function() {
-            return d3.event.preventDefault();
+            return _this._scrollAtStart = window.scrollY;
           };
         })(this)).on("touchend.player", (function(_this) {
           return function() {
             var cell, mouse;
+            if (window.scrollY !== _this._scrollAtStart) {
+              return;
+            }
             mouse = d3.mouse(_this.wallsCanvas.node());
             cell = _this.world.pixelPosToIndex(mouse);
             return _this.dispatch.cellSelected(cell);
@@ -49,9 +52,14 @@
       }
 
       Renderer.prototype.tick = function() {
+        var sz;
+        sz = Math.max(11, this.world.cellSize - 18);
         return this.fairySel.style({
           left: this.fairy.pixel[0] + "px",
-          top: this.fairy.pixel[1] + "px"
+          top: this.fairy.pixel[1] + "px",
+          width: sz + "px",
+          height: sz + "px",
+          margin: -sz / 2 + "px"
         });
       };
 
@@ -61,7 +69,7 @@
           forceFull = false;
         }
         cell = this.world.cells[index];
-        fill = cell & World.REVISITED ? "#393939" : cell & World.OCCUPIED ? String(this.pink.darker(3)) : cell & World.VISITED ? String(this.pink.darker(3)) : this.black;
+        fill = cell & World.REVISITED ? "#393939" : cell & World.OCCUPIED ? String(this.pink.darker(2)) : cell & World.VISITED ? String(this.pink.darker(3)) : this.black;
         if (forceFull) {
           fill = this.black;
         }
