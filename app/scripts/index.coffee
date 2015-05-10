@@ -1,74 +1,68 @@
 requirejs [
-  "models/world"
-  "models/fairy"
+  "models/game"
   "views/renderer"
   "views/tree_renderer"
   "lib/director"
-], (World, Fairy, Renderer, TreeRenderer, Director) ->
+], (Game, Renderer, TreeRenderer, Director) ->
   # Create objects
-  @world = new World(window.innerWidth, window.innerHeight)
-  @fairy = new Fairy()
+  @game = new Game()
+    .on "gameStarted.render", =>
+      @updateResets "restart"
 
   # Start the game
-  @fairy
-    .enter @world
-    .on "indexChanged", (index, previous) =>
+  @game.fairy
+    .on "indexChanged.render", (index, previous) =>
       @treeView.updateFairy()
-
-      # Game logic
-      prevCell = @world.cells[previous]
-      prevCell &= ~World.OCCUPIED
-
-      newCell = @world.cells[index]
-      newCell |= World.OCCUPIED
-
-      if not (newCell & World.VISITED)
-        newCell |= World.VISITED
-      else
-        newCell |= World.REVISITED
-        prevCell |= World.REVISITED
-
-      @world.cells[previous] = prevCell
-      @world.cells[index] = newCell
       @renderer.updateCell previous
       @renderer.updateCell index
 
   # Initialize the renderer
   @renderer = new Renderer
-    world: world
-    fairy: @fairy
+    world: @game.world
+    fairy: @game.fairy
   .on "arrowPressed", (direction) =>
-    @fairy.wish().head direction
+    @game.fairy.wish().head direction
+  .on "cellSelected", (index) =>
+    @game.fairy.wish().goto index
   .on "treeToggled", =>
     @treeView.toggle()
-  .on "cellSelected", (index) =>
-    @fairy.wish().goto index
 
   @treeView = new TreeRenderer
-    world: world
-    fairy: @fairy
+    world: @game.world
+    fairy: @game.fairy
 
+  @resets = d3.select "#resets"
+  @resets.select("#restart")
+    .on "click", =>
+      startGame @game.seed
+  @resets.select("#random")
+    .on "click", =>
+      @router.setRoute "/game/" + Math.floor(Math.random() * 100)
+
+  isTicking = false
   tick = ->
-    @running = true
-    @fairy.tick()
+    isTicking = true
+    @game.tick()
     @renderer.tick()
     window.requestAnimationFrame tick.bind(@)
 
+  startGame = (seed) =>
+    @updateResets("random")
+    @game.build seed
+    @renderer.paint()
+    @treeView.paint()
+    @renderer.updateCell @game.world.maze.start
+    tick() unless isTicking
+
+  @updateResets = (id) ->
+    @resets.selectAll ".round-button"
+      .style "display", ->
+        if d3.select(@).attr("id") == id then "" else "none"
+
+
   @router = Router
-    "/": ->
-      this.setRoute "/game/1"
-    "/game/:seed": (seed) =>
-      @world.build seed
-      @fairy
-        .transportTo world.maze.start
-
-      # Game logic
-      @world.cells[@fairy.index] |= World.OCCUPIED | World.VISITED
-
-      @renderer.paint()
-      @treeView.paint()
-      @renderer.updateCell @fairy.index
-      tick() unless @running
+    "/game/:seed": startGame
+    "/": -> @setRoute "/game/1"
 
 
-  router.init "/"
+  @router.init "/"

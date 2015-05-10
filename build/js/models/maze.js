@@ -201,14 +201,30 @@
         cells = new Array(width * height);
         frontier = [];
         cells[this.start] = 0;
-        frontier.push({
-          index: this.start,
-          direction: N
-        });
-        frontier.push({
-          index: this.start,
-          direction: E
-        });
+        if (0 > Math.floor(this.start / width)) {
+          frontier.push({
+            index: this.start,
+            direction: N
+          });
+        }
+        if (width - 1 > this.start % width) {
+          frontier.push({
+            index: this.start,
+            direction: E
+          });
+        }
+        if (height - 1 > Math.floor(this.start / width)) {
+          frontier.push({
+            index: this.start,
+            direction: S
+          });
+        }
+        if (0 < this.start % width) {
+          frontier.push({
+            index: this.start,
+            direction: W
+          });
+        }
         shuffle(frontier, 0, 2);
         while (!exploreFrontier()) {
           null;

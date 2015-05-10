@@ -32,7 +32,8 @@
         }
         this.maze = new Maze({
           gridSize: this.gridSize,
-          seed: seed
+          seed: seed,
+          start: 0
         });
         return this.cells = this.maze.generate();
       };

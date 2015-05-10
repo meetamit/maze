@@ -121,8 +121,10 @@ define ["lib/d3"], (d3) ->
       frontier = []
 
       cells[@start] = 0
-      frontier.push index: @start, direction: N
-      frontier.push index: @start, direction: E
+      frontier.push index: @start, direction: N if 0 > Math.floor @start / width
+      frontier.push index: @start, direction: E if width  - 1 > @start % width
+      frontier.push index: @start, direction: S if height - 1 > Math.floor @start / width
+      frontier.push index: @start, direction: W if 0 < @start % width
       shuffle frontier, 0, 2
       null while !exploreFrontier()
       cells

@@ -26,6 +26,7 @@ define ["models/maze"], (Maze) ->
       @maze = new Maze
         gridSize: @gridSize
         seed: seed
+        start: 0
       @cells = @maze.generate()
 
     indexToGridPos: (index) ->

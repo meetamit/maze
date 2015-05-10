@@ -3,11 +3,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
       body {
-        overflow: hidden;
+        /*overflow: hidden;*/
         margin: 0;
         background: black;
-        height: 800px;
+        /*height: 800px;*/
         text-align: center;
+        font-family: "Helvetica", Helvetica, Arial, sans-serif
       }
 
       .world {
@@ -41,10 +42,27 @@
       }
       .tree svg path { stroke: white; fill: none; }
 
+      .round-button {
+        font-weight: 700;
+        color: black;
+        font-size: 3.6em;
+        background: #ff83c7;
+        display: inline-block;
+        width: 80px;
+        height: 80px;
+        line-height: 85px;
+        border-radius: 100%;
+      }
+
     </style>
   </head>
   <body>
     <script src="js/lib/require.js" data-main="js/index.js" ></script>
-    <!-- <div style="height:200px"></div> -->
+    <div>
+      <div id="resets">
+        <div id="restart" style="display:none;" class="round-button">&#x21bb;</div>
+        <div id="random"  style="display:none;" class="round-button">?</div>
+      </div>
+    </div>
   </body>
 </html>
