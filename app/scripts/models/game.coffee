@@ -38,6 +38,9 @@ define ["models/world", "models/fairy"], (World, Fairy) ->
             @started = true
             @dispatch.gameStarted()
 
+    updateSize: () ->
+      @world.size = [window.innerWidth, window.innerHeight]
+
     build: (@seed) ->
       @started = false
       @world.build @seed, @density

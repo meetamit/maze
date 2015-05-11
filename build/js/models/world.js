@@ -32,7 +32,7 @@
           density = 12;
         }
         this.cellSize = -this.cellSpacing + Math.floor((this.size[0] - this.cellSpacing) / density);
-        this.gridSize = [Math.floor((this.size[0] - this.cellSpacing) / (this.cellSize + this.cellSpacing)), Math.floor((this.size[1] - this.cellSpacing) / (this.cellSize + this.cellSpacing))];
+        this.gridSize = [Math.floor((this.size[0] - this.cellSpacing) / (this.cellSize + this.cellSpacing)), Math.floor((this.size[1] - this.cellSpacing - 40) / (this.cellSize + this.cellSpacing))];
         this.requiredSize = [this.gridSize[0] * (this.cellSize + this.cellSpacing) + this.cellSpacing, this.gridSize[1] * (this.cellSize + this.cellSpacing) + this.cellSpacing];
         this.maze = new Maze({
           gridSize: this.gridSize,

@@ -43,6 +43,10 @@
         })(this));
       }
 
+      Game.prototype.updateSize = function() {
+        return this.world.size = [window.innerWidth, window.innerHeight];
+      };
+
       Game.prototype.build = function(seed) {
         this.seed = seed;
         this.started = false;

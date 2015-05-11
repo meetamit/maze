@@ -27,6 +27,13 @@ requirejs [
     @game.fairy.wish().goto index
   .on "treeToggled", =>
     @treeView.toggle()
+  .on "heightChanged", (height) =>
+    return if height < @game.world.size[1]
+    if !@game.started
+      # @game.world.size = [window.innerWidth, window.innerHeight]
+      @game.updateSize()
+      startGame @game.seed
+      window.scroll 0, 200
 
   @treeView = new TreeRenderer
     world: @game.world

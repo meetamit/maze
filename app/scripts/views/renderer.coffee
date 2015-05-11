@@ -5,8 +5,14 @@ define ["models/world", "lib/d3"], (World, d3) ->
     constructor: (attrs) ->
       { @world, @fairy, @parent } = attrs
 
-      @dispatch = d3.dispatch("arrowPressed", "cellSelected", "treeToggled")
+      @dispatch = d3.dispatch "arrowPressed", "cellSelected", "treeToggled", "heightChanged"
       d3.rebind @, @dispatch, "on", "off"
+
+      d3.select(window)
+        .on "scroll", =>
+          if window.innerHeight != @world.size[1]
+            @dispatch.heightChanged window.innerHeight
+          @sel.classed "suspended", (window.scrollY + @world.cellSize < @sel.node().offsetTop)
 
       @body = d3.select("body")
         .on "keydown.player", =>
@@ -15,13 +21,15 @@ define ["models/world", "lib/d3"], (World, d3) ->
           else        if key is 40 then World.S # down
           else        if key is 37 then World.W # left
           else        if key is 39 then World.E # right
-          @dispatch.arrowPressed direction if direction?
+          if direction?
+            d3.event.preventDefault()
+            @dispatch.arrowPressed direction
 
           if key is 84 then @dispatch.treeToggled() # T key
 
       @parent ||= @body
       @sel = @parent.append "div"
-        .attr "class", "world"
+        .attr "class", "world suspended"
         .on "touchstart.player", =>
           # d3.event.preventDefault()
           @_scrollAtStart = window.scrollY
@@ -88,7 +96,7 @@ define ["models/world", "lib/d3"], (World, d3) ->
     paint: ->
       @wallsCanvas.attr
         width:  @world.requiredSize[0]
-        height: @world.requiredSize[1]
+        height: Math.max @world.requiredSize[1], @world.size[1] - 10
       # Clear the canvas
       @wallsCtx.fillStyle = String @pink
       @wallsCtx.fillRect(

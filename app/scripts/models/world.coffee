@@ -18,7 +18,7 @@ define ["models/maze"], (Maze) ->
       @cellSize = -@cellSpacing + Math.floor (@size[0] - @cellSpacing) / density
       @gridSize = [
         Math.floor (@size[0] - @cellSpacing) / (@cellSize + @cellSpacing)
-        Math.floor (@size[1] - @cellSpacing) / (@cellSize + @cellSpacing)
+        Math.floor (@size[1] - @cellSpacing - 40) / (@cellSize + @cellSpacing)
       ]
       @requiredSize = [
         @gridSize[0] * (@cellSize + @cellSpacing) + @cellSpacing

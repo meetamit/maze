@@ -87,6 +87,24 @@
         color: black;
       }
 
+      .world:after {
+        content: "↡";
+        font-size: 8em;
+        color: white;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        background: rgba(0,0,0,.8);
+        opacity: 0;
+        -webkit-transition: opacity .5s;
+        transition: opacity .5s;
+      }
+      .world.suspended:after {
+        opacity: 1;
+      }
+
     </style>
   </head>
   <body>

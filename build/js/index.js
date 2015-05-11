@@ -28,6 +28,17 @@
       return function() {
         return _this.treeView.toggle();
       };
+    })(this)).on("heightChanged", (function(_this) {
+      return function(height) {
+        if (height < _this.game.world.size[1]) {
+          return;
+        }
+        if (!_this.game.started) {
+          _this.game.updateSize();
+          startGame(_this.game.seed);
+          return window.scroll(0, 200);
+        }
+      };
     })(this));
     this.treeView = new TreeRenderer({
       world: this.game.world,

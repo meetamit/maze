@@ -8,14 +8,23 @@
 
       function Renderer(attrs) {
         this.world = attrs.world, this.fairy = attrs.fairy, this.parent = attrs.parent;
-        this.dispatch = d3.dispatch("arrowPressed", "cellSelected", "treeToggled");
+        this.dispatch = d3.dispatch("arrowPressed", "cellSelected", "treeToggled", "heightChanged");
         d3.rebind(this, this.dispatch, "on", "off");
+        d3.select(window).on("scroll", (function(_this) {
+          return function() {
+            if (window.innerHeight !== _this.world.size[1]) {
+              _this.dispatch.heightChanged(window.innerHeight);
+            }
+            return _this.sel.classed("suspended", window.scrollY + _this.world.cellSize < _this.sel.node().offsetTop);
+          };
+        })(this));
         this.body = d3.select("body").on("keydown.player", (function(_this) {
           return function() {
             var direction, key;
             key = d3.event.keyCode;
             direction = key === 38 ? World.N : key === 40 ? World.S : key === 37 ? World.W : key === 39 ? World.E : void 0;
             if (direction != null) {
+              d3.event.preventDefault();
               _this.dispatch.arrowPressed(direction);
             }
             if (key === 84) {
@@ -24,7 +33,7 @@
           };
         })(this));
         this.parent || (this.parent = this.body);
-        this.sel = this.parent.append("div").attr("class", "world").on("touchstart.player", (function(_this) {
+        this.sel = this.parent.append("div").attr("class", "world suspended").on("touchstart.player", (function(_this) {
           return function() {
             return _this._scrollAtStart = window.scrollY;
           };
@@ -101,7 +110,7 @@
         var cell, endPt, i, k, l, len, len1, ref, ref1;
         this.wallsCanvas.attr({
           width: this.world.requiredSize[0],
-          height: this.world.requiredSize[1]
+          height: Math.max(this.world.requiredSize[1], this.world.size[1] - 10)
         });
         this.wallsCtx.fillStyle = String(this.pink);
         this.wallsCtx.fillRect(0, 0, (this.world.cellSize + this.world.cellSpacing) * this.world.gridSize[0] + this.world.cellSpacing, (this.world.cellSize + this.world.cellSpacing) * this.world.gridSize[1] + this.world.cellSpacing);
