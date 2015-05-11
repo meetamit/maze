@@ -25,6 +25,9 @@ module.exports = (grunt) ->
           src: "app/index.html"
           dest: "build/index.html"
         ,
+          src: "app/img/fairy.gif"
+          dest: "build/img/fairy.gif"
+        ,
           src: "bower_components/d3/d3.js"
           dest: "build/js/lib/d3.js"
         ,

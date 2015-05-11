@@ -8,6 +8,10 @@ requirejs [
   @game = new Game()
     .on "gameStarted.render", =>
       @updateResets "restart"
+    .on "gameWon", =>
+      @renderer.showWin()
+
+
 
   # Start the game
   @game.fairy
@@ -20,7 +24,6 @@ requirejs [
   @renderer = new Renderer
     world: @game.world
     fairy: @game.fairy
-  .showTrail @game.showTrail
   .on "arrowPressed", (direction) =>
     @game.fairy.wish().head direction
   .on "cellSelected", (index) =>
@@ -30,28 +33,35 @@ requirejs [
   .on "heightChanged", (height) =>
     return if height < @game.world.size[1]
     if !@game.started
-      # @game.world.size = [window.innerWidth, window.innerHeight]
       @game.updateSize()
       startGame @game.seed
       window.scroll 0, 200
+  .on "realFairyClicked", ->
+    loadRandomGame()
 
   @treeView = new TreeRenderer
     world: @game.world
     fairy: @game.fairy
 
   @resets = d3.select "#resets"
+
   @resets.select("#restart")
     .on "click", =>
       startGame @game.seed
+
   @resets.select("#random")
-    .on "click", =>
-      @router.setRoute "/game/" + Math.floor(Math.random() * 100)
+    .on "click", loadRandomGame = =>
+      # @router.setRoute "/game/" + Math.floor(Math.random() * 100)
+      seed = Math.floor(Math.random() * 100)
+      history.replaceState {}, "Maze", "/#/game/" + seed
+      startGame seed
 
   @density = d3.select "#density"
     .attr "max", window.innerWidth / 15
     .on "change", =>
       @game.setDensity Number @density.property "value"
       startGame @game.seed
+
   @trail = d3.select "#trail"
     .classed "checked", @game.showTrail
     .on "click", =>
@@ -70,7 +80,9 @@ requirejs [
     @updateResets("random")
     @density.property("value", @game.density)
     @game.build seed
-    @renderer.paint()
+    @renderer
+      .showTrail @game.showTrail
+      .paint()
     @treeView.paint()
     @renderer.updateCell @game.world.maze.start
     tick() unless isTicking

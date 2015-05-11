@@ -3,7 +3,7 @@
     var Game, LocalStorageManager;
     Game = (function() {
       function Game() {
-        this.dispatch = d3.dispatch("gameStarted");
+        this.dispatch = d3.dispatch("gameStarted", "gameWon");
         this.storage = new LocalStorageManager;
         d3.rebind(this, this.dispatch, "on", "off");
         this.density = this.storage.getItem("density");
@@ -37,7 +37,12 @@
             _this.world.cells[index] = newCell;
             if (!_this.started) {
               _this.started = true;
-              return _this.dispatch.gameStarted();
+              _this.dispatch.gameStarted();
+            }
+            if (index === _this.world.maze.end.index) {
+              return setTimeout(function() {
+                return _this.dispatch.gameWon();
+              }, 500);
             }
           };
         })(this));

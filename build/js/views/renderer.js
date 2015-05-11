@@ -8,7 +8,7 @@
 
       function Renderer(attrs) {
         this.world = attrs.world, this.fairy = attrs.fairy, this.parent = attrs.parent;
-        this.dispatch = d3.dispatch("arrowPressed", "cellSelected", "treeToggled", "heightChanged");
+        this.dispatch = d3.dispatch("arrowPressed", "cellSelected", "treeToggled", "heightChanged", "realFairyClicked");
         d3.rebind(this, this.dispatch, "on", "off");
         d3.select(window).on("scroll", (function(_this) {
           return function() {
@@ -58,6 +58,14 @@
         this.endSel.enter().append("div").attr({
           "class": "end"
         });
+        this.realFairySel = this.sel.selectAll(".real-fairy").data([null]);
+        this.realFairySel.enter().append("div").attr({
+          "class": "real-fairy"
+        }).on("click", (function(_this) {
+          return function() {
+            return _this.dispatch.realFairyClicked();
+          };
+        })(this));
       }
 
       Renderer.prototype.tick = function() {
@@ -79,6 +87,11 @@
           this.paint();
         }
         return this;
+      };
+
+      Renderer.prototype.showWin = function() {
+        this.showTrail(true);
+        return this.sel.classed("winner", true);
       };
 
       Renderer.prototype.updateCell = function(index, forceFull) {
@@ -125,10 +138,15 @@
           this.updateCell(i, false);
         }
         endPt = this.world.indexToPixelPos(this.world.maze.end.index);
-        return this.endSel.style({
+        this.endSel.style({
           left: endPt[0] + "px",
           top: endPt[1] + "px"
         });
+        this.realFairySel.style({
+          left: endPt[0] + "px",
+          top: endPt[1] + "px"
+        });
+        return this.sel.classed("winner", false);
       };
 
       Renderer.prototype._fillCell = function(index, gap) {

@@ -1,9 +1,13 @@
 (function() {
   requirejs(["models/game", "views/renderer", "views/tree_renderer", "lib/director"], function(Game, Renderer, TreeRenderer, Director) {
-    var isTicking, startGame, tick;
+    var isTicking, loadRandomGame, startGame, tick;
     this.game = new Game().on("gameStarted.render", (function(_this) {
       return function() {
         return _this.updateResets("restart");
+      };
+    })(this)).on("gameWon", (function(_this) {
+      return function() {
+        return _this.renderer.showWin();
       };
     })(this));
     this.game.fairy.on("indexChanged.render", (function(_this) {
@@ -16,7 +20,7 @@
     this.renderer = new Renderer({
       world: this.game.world,
       fairy: this.game.fairy
-    }).showTrail(this.game.showTrail).on("arrowPressed", (function(_this) {
+    }).on("arrowPressed", (function(_this) {
       return function(direction) {
         return _this.game.fairy.wish().head(direction);
       };
@@ -39,7 +43,9 @@
           return window.scroll(0, 200);
         }
       };
-    })(this));
+    })(this)).on("realFairyClicked", function() {
+      return loadRandomGame();
+    });
     this.treeView = new TreeRenderer({
       world: this.game.world,
       fairy: this.game.fairy
@@ -50,9 +56,12 @@
         return startGame(_this.game.seed);
       };
     })(this));
-    this.resets.select("#random").on("click", (function(_this) {
+    this.resets.select("#random").on("click", loadRandomGame = (function(_this) {
       return function() {
-        return _this.router.setRoute("/game/" + Math.floor(Math.random() * 100));
+        var seed;
+        seed = Math.floor(Math.random() * 100);
+        history.replaceState({}, "Maze", "/#/game/" + seed);
+        return startGame(seed);
       };
     })(this));
     this.density = d3.select("#density").attr("max", window.innerWidth / 15).on("change", (function(_this) {
@@ -80,7 +89,7 @@
         _this.updateResets("random");
         _this.density.property("value", _this.game.density);
         _this.game.build(seed);
-        _this.renderer.paint();
+        _this.renderer.showTrail(_this.game.showTrail).paint();
         _this.treeView.paint();
         _this.renderer.updateCell(_this.game.world.maze.start);
         if (!isTicking) {

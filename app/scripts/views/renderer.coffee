@@ -5,7 +5,7 @@ define ["models/world", "lib/d3"], (World, d3) ->
     constructor: (attrs) ->
       { @world, @fairy, @parent } = attrs
 
-      @dispatch = d3.dispatch "arrowPressed", "cellSelected", "treeToggled", "heightChanged"
+      @dispatch = d3.dispatch "arrowPressed", "cellSelected", "treeToggled", "heightChanged", "realFairyClicked"
       d3.rebind @, @dispatch, "on", "off"
 
       d3.select(window)
@@ -58,6 +58,19 @@ define ["models/world", "lib/d3"], (World, d3) ->
         .attr
           class: "end"
 
+      @realFairySel = @sel.selectAll(".real-fairy")
+        .data [null]
+      @realFairySel.enter()
+        .append "div"
+        .attr
+          class: "real-fairy"
+        .on "click", =>
+          @dispatch.realFairyClicked()
+      # @realFairySel
+      #   .append "img"
+      #   .attr "src", "img/fairy.gif"
+
+
     tick: ->
       sz = Math.max 11, @world.cellSize - 18
       @fairySel
@@ -71,6 +84,10 @@ define ["models/world", "lib/d3"], (World, d3) ->
     showTrail: (@_showTrail) ->
       @paint() if @world.requiredSize?[0]
       @
+
+    showWin: ->
+      @showTrail true
+      @sel.classed "winner", true
 
     updateCell: (index, forceFull = false) ->
       cell = @world.cells[index]
@@ -112,6 +129,12 @@ define ["models/world", "lib/d3"], (World, d3) ->
         .style
           left: endPt[0] + "px"
           top:  endPt[1] + "px"
+
+      @realFairySel
+        .style
+          left: endPt[0] + "px"
+          top:  endPt[1] + "px"
+      @sel.classed "winner", false
 
     _fillCell: (index, gap = 0) ->
       i = index % @world.gridSize[0]

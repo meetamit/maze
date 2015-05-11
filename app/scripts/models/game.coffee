@@ -1,7 +1,7 @@
 define ["models/world", "models/fairy"], (World, Fairy) ->
   class Game
     constructor: ->
-      @dispatch = d3.dispatch("gameStarted")
+      @dispatch = d3.dispatch("gameStarted", "gameWon")
       @storage = new LocalStorageManager
       d3.rebind @, @dispatch, "on", "off"
 
@@ -37,6 +37,11 @@ define ["models/world", "models/fairy"], (World, Fairy) ->
           if not @started
             @started = true
             @dispatch.gameStarted()
+
+          if index == @world.maze.end.index
+            setTimeout =>
+              @dispatch.gameWon()
+            , 500
 
     updateSize: () ->
       @world.size = [window.innerWidth, window.innerHeight]
