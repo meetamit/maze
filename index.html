@@ -1,0 +1,138 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body {
+        overflow: auto;
+        margin: 0;
+        background: black;
+        color: #ff83c7;
+        text-align: center;
+        font-family: "Helvetica", Helvetica, Arial, sans-serif;
+        font-weight: 700;
+        font-size: 16px;
+      }
+
+      .world {
+        position: relative;
+        display: inline-block;
+        margin-top: 10px;
+      }
+      .fairy {
+        position: absolute;
+        border-radius: 5px;
+        width: 18px;
+        height: 18px;
+        margin: -9px;
+      }
+      .end {
+        position: absolute;
+        background: #3f3;
+        border-radius: 100%;
+        width: 10px;
+        height: 10px;
+        margin: -5px;
+      }
+
+
+      .tree {
+        position: absolute;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,.9);
+      }
+      .tree svg path { stroke: white; fill: none; }
+
+      .round-button {
+        color: black;
+        font-size: 3.6em;
+        background: #ff83c7;
+        border: 4px;
+        display: inline-block;
+        width: 80px;
+        height: 80px;
+        line-height: 85px;
+        border-radius: 100%;
+        border: 4px solid #ff83c7;
+        overflow: hidden;
+        margin: 5px 20px
+      }
+
+      #top {
+        padding: 20px 0;
+      }
+      #resets {
+        display: inline-block;
+      }
+      .labeled-slider {
+        padding-top: 20px;
+      }
+      .labeled-slider > label {
+        font-size: 1.2em;
+        vertical-align: middle;
+      }
+      .labeled-slider input {
+        width: 60%;
+        vertical-align: middle;
+      }
+
+      .round-button.checkbox {
+        background: #4e002a;
+        color: inherit;
+        line-height: 72px;
+      }
+      .round-button.checkbox.checked {
+        background: #ff83c7;
+        color: black;
+      }
+
+      .world:after {
+        content: "↡";
+        font-size: 8em;
+        color: white;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        background: rgba(0,0,0,.8);
+        opacity: 0;
+        -webkit-transition: opacity .5s;
+        transition: opacity .5s;
+      }
+      .world.suspended:after {
+        opacity: 1;
+      }
+
+      .real-fairy {
+        position: absolute;
+        width: 50px;
+        height: 100px;
+        background: url("img/fairy.gif") no-repeat right top;
+        margin: -50px 0 0 -25px;
+        z-index: 1;
+        display: none;
+      }
+      .world.winner .real-fairy {
+        display: block;
+      }
+
+
+    </style>
+  </head>
+  <body>
+    <script src="js/lib/require.js" data-main="js/index.js" ></script>
+    <div id="top">
+      <div id="resets">
+        <div id="restart" style="display:none;" class="round-button">&#x21bb;</div>
+        <div id="random"  style="display:none;" class="round-button">?</div>
+      </div>
+      <div id="trail" class="round-button checkbox">⇝</div>
+      <div class="labeled-slider">
+        <label>Density</label>
+        <input id="density" type="range" min="5" max="40", step="1">
+      </div>
+    </div>
+  </body>
+</html>
